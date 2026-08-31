@@ -108,6 +108,20 @@
   .est{font-size:10px;font-weight:700;color:var(--holiday-ink);background:var(--holiday);
     border:1px solid #f0d6a8;border-radius:5px;padding:1px 5px;white-space:nowrap}
   .hint{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.7}
+  #botEx{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  #botEx button{color:var(--muted);font-size:11.5px}
+  .botOut:empty{display:none}
+  .botOut{font-size:13px;line-height:1.6;border-radius:9px;padding:11px 13px;margin-top:4px}
+  .botOut.ok{background:var(--m-bg);border:1px solid #b7e2c9;color:#155e3f}
+  .botOut.bad{background:#fdf1f1;border:1px solid #f3c9c6;color:#96281f}
+  .botOut b{font-weight:650}
+  .botNote{margin:8px 0 0;font-size:12.5px;opacity:.9}
+  .botTab{width:100%;border-collapse:collapse;margin:8px 0 0;min-width:0;table-layout:fixed}
+  .botTab td{border:0;padding:3px 0;text-align:left;font-size:12.5px}
+  .botTab td.num{width:36px;text-align:right;font-weight:650;padding-right:10px}
+  .botTab td.bar{width:52%}
+  .botTab td.bar{background:linear-gradient(var(--line),var(--line)) left center/100% 7px no-repeat;border-radius:4px}
+  .botTab td.bar i{display:block;height:7px;border-radius:4px;background:var(--m);min-width:2px}
   .warnbox{font-size:12.5px;color:#8a5300;background:#fff7e8;border:1px solid #f0d6a8;
     border-radius:9px;padding:10px 12px;line-height:1.6;margin-bottom:14px}
   .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(20px);
@@ -141,6 +155,7 @@
     <select id="fYear"></select>
     <select id="fMonth"></select>
     <button id="bAdd" class="primary adminOnly">+ Tambah Bulan</button>
+    <button id="bBot" class="adminOnly">Asisten</button>
     <button id="bNames" class="adminOnly">Petugas</button>
     <button id="bHol">Libur Nasional</button>
     <button id="bExport">Ekspor</button>
@@ -230,6 +245,34 @@
   </div>
 </dialog>
 
+<dialog id="dlgBot">
+  <div class="dh">Asisten Jadwal</div>
+  <div class="dc">
+    <div class="row" style="margin-bottom:6px">
+      <input type="text" id="botCmd" placeholder="Ketik perintah, lalu tekan Enter">
+    </div>
+    <div id="botEx">
+      <button class="sm" data-cmd="susun Oktober 2026, Dewa cuti 5 sampai 9">susun Oktober 2026, Dewa cuti 5 sampai 9</button>
+      <button class="sm" data-cmd="rekap">rekap</button>
+      <button class="sm" data-cmd="tukar Fiki dan Adit">tukar Fiki dan Adit</button>
+      <button class="sm" data-cmd="kosongkan">kosongkan</button>
+    </div>
+    <div id="botOut" class="botOut"></div>
+    <div class="hint">
+      Asisten ini menghitung sendiri di dalam halaman, tanpa menghubungi layanan mana pun,
+      jadi tetap bekerja walau berkas dibuka tanpa internet. Yang dikenali:
+      <b>susun</b> (buat sekaligus isi satu bulan, boleh disertai catatan cuti),
+      <b>rekap</b> (hitung tugas per petugas untuk bulan yang tampil),
+      <b>tukar</b> (tukar jadwal dua petugas), dan <b>kosongkan</b>.
+      Bila bulan tidak disebut, yang dipakai adalah bulan yang sedang tampil di filter.
+    </div>
+  </div>
+  <div class="df">
+    <button id="botRun" class="primary">Jalankan</button>
+    <button id="botClose">Tutup</button>
+  </div>
+</dialog>
+
 <dialog id="dlgExport">
   <div class="dh">Ekspor</div>
   <div class="dc">
@@ -246,7 +289,7 @@
 </dialog>
 
 <script>
-const SEED = {"names":["Syifa","Herry","Fiki","Adit","Dewa","Andri","Rizal"],"months":{"2025-07":{"year":2025,"month":7,"cells":{"Syifa":{"2":"M","9":"M","30":"M"},"Herry":{"3":"M","16":"M","31":"M"},"Fiki":{"7":"M","15":"M","23":"M"},"Adit":{"4":"M","14":"M","22":"M"},"Dewa":{"10":"M","17":"M","21":"M"},"Andri":{"1":"M","11":"M","25":"M","29":"M"},"Rizal":{"8":"M","18":"M","24":"M","28":"M"}}},"2025-08":{"year":2025,"month":8,"cells":{"Syifa":{"11":"M","20":"M","28":"M"},"Herry":{"8":"M","29":"M"},"Fiki":{"7":"M","13":"M","19":"M","27":"M"},"Adit":{"1":"M","12":"M","25":"M"},"Dewa":{"6":"M","22":"M"},"Andri":{"4":"M","14":"M","26":"M"},"Rizal":{"5":"M","15":"M","21":"M"}}},"2025-09":{"year":2025,"month":9,"cells":{"Syifa":{"9":"M","16":"M","25":"M"},"Herry":{"1":"M","19":"M","23":"M","30":"M"},"Fiki":{"8":"M","18":"M","26":"M"},"Adit":{"3":"M","17":"M","24":"M"},"Dewa":{"12":"M","22":"M"},"Andri":{"4":"M","11":"M","29":"M"},"Rizal":{"2":"M","10":"M","15":"M"}}},"2025-10":{"year":2025,"month":10,"cells":{"Syifa":{"3":"M","8":"M","16":"M","31":"M"},"Herry":{"6":"M","15":"M","22":"M","28":"M"},"Fiki":{"1":"M","10":"M","23":"M"},"Adit":{"2":"M","13":"M","21":"M"},"Dewa":{"17":"M","27":"M"},"Andri":{"9":"M","20":"M","29":"M"},"Rizal":{"7":"M","14":"M","24":"M","30":"M"}}},"2025-11":{"year":2025,"month":11,"cells":{"Syifa":{"5":"M","19":"M","28":"M"},"Herry":{"6":"M","14":"M","20":"M","26":"M"},"Fiki":{"3":"M","13":"M","21":"M"},"Adit":{"4":"M","12":"M","24":"M"},"Dewa":{"7":"M"},"Andri":{"11":"M","17":"M","25":"M"},"Rizal":{"10":"M","18":"M","27":"M"}}},"2025-12":{"year":2025,"month":12,"cells":{"Syifa":{"5":"M","17":"M","24":"M"},"Herry":{"4":"M","11":"M","19":"M","31":"M"},"Fiki":{"3":"M","9":"M","22":"M"},"Adit":{"2":"M","15":"M","30":"M"},"Dewa":{"1":"M","12":"M"},"Andri":{"10":"M","18":"M","29":"M"},"Rizal":{"8":"M","16":"M","23":"M"}}},"2026-01":{"year":2026,"month":1,"cells":{"Syifa":{"9":"M","14":"M"},"Herry":{"6":"M","12":"M","23":"M","29":"M"},"Fiki":{"2":"M","8":"M","22":"M"},"Adit":{"13":"M","21":"M","28":"M"},"Dewa":{"20":"M","26":"M"},"Andri":{"7":"M","19":"M","30":"M"},"Rizal":{"5":"M","15":"M","27":"M"}}},"2026-02":{"year":2026,"month":2,"cells":{"Syifa":{"3":"M","10":"M","18":"M"},"Herry":{"9":"M","19":"M","25":"M"},"Fiki":{"6":"M","11":"M","23":"M"},"Adit":{"5":"M","12":"M","26":"M"},"Dewa":{"4":"M"},"Andri":{"13":"M","24":"M"},"Rizal":{"2":"M","20":"M","27":"M"}}},"2026-03":{"year":2026,"month":3,"cells":{"Syifa":{"2":"M","12":"M"},"Herry":{"6":"M","16":"M"},"Fiki":{"5":"M","13":"M","27":"M"},"Adit":{"9":"M","17":"M","31":"M"},"Dewa":{"3":"M","26":"M"},"Andri":{"4":"M","11":"M","30":"M"},"Rizal":{"10":"M","25":"M"}}},"2026-04":{"year":2026,"month":4,"cells":{"Syifa":{"10":"M","15":"M","22":"M"},"Herry":{"2":"M","13":"M","21":"M"},"Fiki":{"1":"M","8":"M","14":"M","24":"M"},"Adit":{"7":"M","20":"M","28":"M"},"Dewa":{"16":"M","30":"M"},"Andri":{"9":"M","17":"M","27":"M"},"Rizal":{"6":"M","23":"M","29":"M"}}},"2026-05":{"year":2026,"month":5,"cells":{"Syifa":{"7":"M","17":"P","22":"M"},"Herry":{"4":"M","16":"P","21":"M"},"Fiki":{"2":"P","11":"M","25":"M"},"Adit":{"5":"M","12":"M","20":"M"},"Dewa":{"13":"M","24":"S","26":"M"},"Andri":{"1":"M","8":"M","19":"M"},"Rizal":{"6":"M","10":"S","18":"M","29":"M"}}},"2026-06":{"year":2026,"month":6,"cells":{"Syifa":{"2":"M","17":"M","19":"M"},"Herry":{"5":"M","11":"M","22":"M"},"Fiki":{"3":"M","15":"M","25":"M"},"Adit":{"8":"M","12":"M","24":"M"},"Dewa":{"10":"M","30":"M"},"Andri":{"4":"M","23":"M","29":"M"},"Rizal":{"9":"M","18":"M","26":"M"}}},"2026-07":{"year":2026,"month":7,"cells":{"Syifa":{"1":"M","8":"M","11":"P","15":"M"},"Herry":{"6":"M","16":"M","18":"P","22":"M","30":"M"},"Fiki":{"2":"M","13":"M","23":"M","31":"M"},"Adit":{"3":"M","14":"M","24":"M"},"Dewa":{"7":"M","19":"S","21":"M","28":"M"},"Andri":{"9":"M","17":"M","27":"M"},"Rizal":{"10":"M","20":"M","29":"M"}}},"2026-08":{"year":2026,"month":8,"cells":{"Syifa":{"7":"M","13":"M","21":"M"},"Herry":{"4":"M","14":"M","23":"S","31":"M"},"Fiki":{"10":"M","16":"P","20":"M"},"Dewa":{"19":"M","24":"M"},"Adit":{"3":"M","12":"M","17":"S","27":"M"},"Andri":{"5":"M","11":"M","15":"P","26":"M"},"Rizal":{"6":"M","18":"M","22":"S","28":"M"}}},"2026-09":{"year":2026,"month":9,"cells":{"Syifa":{"3":"M","17":"M","28":"M"},"Herry":{"9":"M","18":"M","29":"M"},"Fiki":{"4":"M","10":"M","21":"M","30":"M"},"Dewa":{"1":"M","11":"M","24":"M"},"Adit":{"2":"M","14":"M","23":"M"},"Andri":{"8":"M","15":"M","22":"M"},"Rizal":{"7":"M","16":"M","25":"M"}}}},"holidays":[{"date":"2026-01-01","name":"Tahun Baru Masehi 2026"},{"date":"2026-02-17","name":"Tahun Baru Imlek 2577 Kongzili"},{"date":"2026-03-19","name":"Hari Suci Nyepi (Tahun Baru Saka 1948)"},{"date":"2026-03-21","name":"Idul Fitri 1447 H (hari pertama)"},{"date":"2026-03-22","name":"Idul Fitri 1447 H (hari kedua)"},{"date":"2026-04-03","name":"Wafat Isa Almasih"},{"date":"2026-05-01","name":"Hari Buruh Internasional"},{"date":"2026-05-14","name":"Kenaikan Isa Almasih"},{"date":"2026-05-15","name":"Cuti Bersama Kenaikan Isa Almasih"},{"date":"2026-05-27","name":"Idul Adha 1447 H"},{"date":"2026-05-28","name":"Cuti Bersama Idul Adha 1447 H"},{"date":"2026-05-31","name":"Hari Raya Waisak 2570 BE"},{"date":"2026-06-01","name":"Hari Lahir Pancasila"},{"date":"2026-08-17","name":"HUT Kemerdekaan RI ke-81"},{"date":"2026-08-25","name":"Maulid Nabi Muhammad SAW 1448 H"},{"date":"2026-12-25","name":"Hari Raya Natal"}],"admin":{"hash":"1g6mb70-126me2y"},"stamp":"2026-08-31T11:47:35+07:00"};
+const SEED = {"names":["Syifa","Herry","Fiki","Adit","Dewa","Andri","Rizal"],"months":{"2025-07":{"year":2025,"month":7,"cells":{"Syifa":{"2":"M","9":"M","30":"M"},"Herry":{"3":"M","16":"M","31":"M"},"Fiki":{"7":"M","15":"M","23":"M"},"Adit":{"4":"M","14":"M","22":"M"},"Dewa":{"10":"M","17":"M","21":"M"},"Andri":{"1":"M","11":"M","25":"M","29":"M"},"Rizal":{"8":"M","18":"M","24":"M","28":"M"}}},"2025-08":{"year":2025,"month":8,"cells":{"Syifa":{"11":"M","20":"M","28":"M"},"Herry":{"8":"M","29":"M"},"Fiki":{"7":"M","13":"M","19":"M","27":"M"},"Adit":{"1":"M","12":"M","25":"M"},"Dewa":{"6":"M","22":"M"},"Andri":{"4":"M","14":"M","26":"M"},"Rizal":{"5":"M","15":"M","21":"M"}}},"2025-09":{"year":2025,"month":9,"cells":{"Syifa":{"9":"M","16":"M","25":"M"},"Herry":{"1":"M","19":"M","23":"M","30":"M"},"Fiki":{"8":"M","18":"M","26":"M"},"Adit":{"3":"M","17":"M","24":"M"},"Dewa":{"12":"M","22":"M"},"Andri":{"4":"M","11":"M","29":"M"},"Rizal":{"2":"M","10":"M","15":"M"}}},"2025-10":{"year":2025,"month":10,"cells":{"Syifa":{"3":"M","8":"M","16":"M","31":"M"},"Herry":{"6":"M","15":"M","22":"M","28":"M"},"Fiki":{"1":"M","10":"M","23":"M"},"Adit":{"2":"M","13":"M","21":"M"},"Dewa":{"17":"M","27":"M"},"Andri":{"9":"M","20":"M","29":"M"},"Rizal":{"7":"M","14":"M","24":"M","30":"M"}}},"2025-11":{"year":2025,"month":11,"cells":{"Syifa":{"5":"M","19":"M","28":"M"},"Herry":{"6":"M","14":"M","20":"M","26":"M"},"Fiki":{"3":"M","13":"M","21":"M"},"Adit":{"4":"M","12":"M","24":"M"},"Dewa":{"7":"M"},"Andri":{"11":"M","17":"M","25":"M"},"Rizal":{"10":"M","18":"M","27":"M"}}},"2025-12":{"year":2025,"month":12,"cells":{"Syifa":{"5":"M","17":"M","24":"M"},"Herry":{"4":"M","11":"M","19":"M","31":"M"},"Fiki":{"3":"M","9":"M","22":"M"},"Adit":{"2":"M","15":"M","30":"M"},"Dewa":{"1":"M","12":"M"},"Andri":{"10":"M","18":"M","29":"M"},"Rizal":{"8":"M","16":"M","23":"M"}}},"2026-01":{"year":2026,"month":1,"cells":{"Syifa":{"9":"M","14":"M"},"Herry":{"6":"M","12":"M","23":"M","29":"M"},"Fiki":{"2":"M","8":"M","22":"M"},"Adit":{"13":"M","21":"M","28":"M"},"Dewa":{"20":"M","26":"M"},"Andri":{"7":"M","19":"M","30":"M"},"Rizal":{"5":"M","15":"M","27":"M"}}},"2026-02":{"year":2026,"month":2,"cells":{"Syifa":{"3":"M","10":"M","18":"M"},"Herry":{"9":"M","19":"M","25":"M"},"Fiki":{"6":"M","11":"M","23":"M"},"Adit":{"5":"M","12":"M","26":"M"},"Dewa":{"4":"M"},"Andri":{"13":"M","24":"M"},"Rizal":{"2":"M","20":"M","27":"M"}}},"2026-03":{"year":2026,"month":3,"cells":{"Syifa":{"2":"M","12":"M"},"Herry":{"6":"M","16":"M"},"Fiki":{"5":"M","13":"M","27":"M"},"Adit":{"9":"M","17":"M","31":"M"},"Dewa":{"3":"M","26":"M"},"Andri":{"4":"M","11":"M","30":"M"},"Rizal":{"10":"M","25":"M"}}},"2026-04":{"year":2026,"month":4,"cells":{"Syifa":{"10":"M","15":"M","22":"M"},"Herry":{"2":"M","13":"M","21":"M"},"Fiki":{"1":"M","8":"M","14":"M","24":"M"},"Adit":{"7":"M","20":"M","28":"M"},"Dewa":{"16":"M","30":"M"},"Andri":{"9":"M","17":"M","27":"M"},"Rizal":{"6":"M","23":"M","29":"M"}}},"2026-05":{"year":2026,"month":5,"cells":{"Syifa":{"7":"M","17":"P","22":"M"},"Herry":{"4":"M","16":"P","21":"M"},"Fiki":{"2":"P","11":"M","25":"M"},"Adit":{"5":"M","12":"M","20":"M"},"Dewa":{"13":"M","24":"S","26":"M"},"Andri":{"1":"M","8":"M","19":"M"},"Rizal":{"6":"M","10":"S","18":"M","29":"M"}}},"2026-06":{"year":2026,"month":6,"cells":{"Syifa":{"2":"M","17":"M","19":"M"},"Herry":{"5":"M","11":"M","22":"M"},"Fiki":{"3":"M","15":"M","25":"M"},"Adit":{"8":"M","12":"M","24":"M"},"Dewa":{"10":"M","30":"M"},"Andri":{"4":"M","23":"M","29":"M"},"Rizal":{"9":"M","18":"M","26":"M"}}},"2026-07":{"year":2026,"month":7,"cells":{"Syifa":{"1":"M","8":"M","11":"P","15":"M"},"Herry":{"6":"M","16":"M","18":"P","22":"M","30":"M"},"Fiki":{"2":"M","13":"M","23":"M","31":"M"},"Adit":{"3":"M","14":"M","24":"M"},"Dewa":{"7":"M","19":"S","21":"M","28":"M"},"Andri":{"9":"M","17":"M","27":"M"},"Rizal":{"10":"M","20":"M","29":"M"}}},"2026-08":{"year":2026,"month":8,"cells":{"Syifa":{"7":"M","13":"M","21":"M"},"Herry":{"4":"M","14":"M","23":"S","31":"M"},"Fiki":{"10":"M","16":"P","20":"M"},"Dewa":{"19":"M","24":"M"},"Adit":{"3":"M","12":"M","17":"S","27":"M"},"Andri":{"5":"M","11":"M","15":"P","26":"M"},"Rizal":{"6":"M","18":"M","22":"S","28":"M"}}},"2026-09":{"year":2026,"month":9,"cells":{"Syifa":{"3":"M","17":"M","28":"M"},"Herry":{"9":"M","18":"M","29":"M"},"Fiki":{"4":"M","10":"M","21":"M","30":"M"},"Dewa":{"1":"M","11":"M","24":"M"},"Adit":{"2":"M","14":"M","23":"M"},"Andri":{"8":"M","15":"M","22":"M"},"Rizal":{"7":"M","16":"M","25":"M"}}}},"holidays":[{"date":"2026-01-01","name":"Tahun Baru Masehi 2026"},{"date":"2026-02-17","name":"Tahun Baru Imlek 2577 Kongzili"},{"date":"2026-03-19","name":"Hari Suci Nyepi (Tahun Baru Saka 1948)"},{"date":"2026-03-21","name":"Idul Fitri 1447 H (hari pertama)"},{"date":"2026-03-22","name":"Idul Fitri 1447 H (hari kedua)"},{"date":"2026-04-03","name":"Wafat Isa Almasih"},{"date":"2026-05-01","name":"Hari Buruh Internasional"},{"date":"2026-05-14","name":"Kenaikan Isa Almasih"},{"date":"2026-05-15","name":"Cuti Bersama Kenaikan Isa Almasih"},{"date":"2026-05-27","name":"Idul Adha 1447 H"},{"date":"2026-05-28","name":"Cuti Bersama Idul Adha 1447 H"},{"date":"2026-05-31","name":"Hari Raya Waisak 2570 BE"},{"date":"2026-06-01","name":"Hari Lahir Pancasila"},{"date":"2026-08-17","name":"HUT Kemerdekaan RI ke-81"},{"date":"2026-08-25","name":"Maulid Nabi Muhammad SAW 1448 H"},{"date":"2026-12-25","name":"Hari Raya Natal"}],"admin":{"hash":"1g6mb70-126me2y"},"stamp":"2026-08-31T11:53:42+07:00"};
 
 const MK = {
   M:{label:"Masuk Pagi", glyph:"✓"},
@@ -581,7 +624,7 @@ document.getElementById("app").addEventListener("contextmenu", e => {
 });
 
 /* ---------- pengisian otomatis ---------- */
-function autoFill(key){
+function autoFill(key, blokir){
   const mo = state.months[key];
   const hol = holidayMap();
   const work = [];
@@ -594,6 +637,16 @@ function autoFill(key){
   mo.cells = {};
   state.names.forEach(n => mo.cells[n] = {});
   if(!state.names.length) return;
+
+  // tandai lebih dulu hari-hari petugas yang tidak tersedia
+  blokir = blokir || {};
+  const halangan = {};
+  for(const n in blokir){
+    if(!mo.cells[n]) continue;
+    halangan[n] = blokir[n];
+    for(const d of blokir[n]) mo.cells[n][d] = "L";
+  }
+
   let start = 0;
   const prev = monthKeys().filter(k => k < key).pop();
   if(prev){
@@ -604,7 +657,21 @@ function autoFill(key){
         if(p.cells[n][d] === "M" && +d > lastDay){ lastDay = +d; lastName = n; }
     if(lastName) start = (state.names.indexOf(lastName) + 1) % state.names.length;
   }
-  work.forEach((d,i) => { mo.cells[state.names[(start+i) % state.names.length]][d] = "M"; });
+
+  // rotasi berurutan; petugas yang terhalang hari itu dilompati, giliran
+  // berikutnya tetap diambil dari urutan supaya pembagian tetap merata
+  let i = 0;
+  for(const d of work){
+    let pilih = null;
+    for(let k = 0; k < state.names.length; k++){
+      const kand = state.names[(start + i + k) % state.names.length];
+      if(halangan[kand] && halangan[kand].indexOf(d) >= 0) continue;
+      pilih = kand; i += k; break;
+    }
+    if(pilih === null) continue;   // semua petugas terhalang pada hari ini
+    mo.cells[pilih][d] = "M";
+    i++;
+  }
 }
 
 /* ---------- pilihan tanda ---------- */
@@ -940,6 +1007,209 @@ document.getElementById("fYear").onchange = e => {
 document.getElementById("fMonth").onchange = e => {
   filterMonth = e.target.value; render();
 };
+
+
+/* ---------- asisten jadwal ----------
+   Menerjemahkan perintah singkat berbahasa Indonesia menjadi tindakan pada
+   jadwal. Semuanya dihitung di dalam halaman ini; tidak ada layanan luar
+   yang dihubungi, jadi tetap jalan saat berkas dibuka tanpa internet.        */
+
+function botNama(teks){
+  const t = " " + teks.toLowerCase() + " ";
+  const urut = state.names.slice().sort((a,b) => b.length - a.length);
+  const ketemu = [];
+  for(const n of urut){
+    const p = t.indexOf(n.toLowerCase());
+    if(p >= 0) ketemu.push({nama:n, pos:p});
+  }
+  return ketemu.sort((a,b) => a.pos - b.pos).map(x => x.nama);
+}
+function botBulan(teks){
+  const t = teks.toLowerCase();
+  let hit = null;
+  for(let i=0; i<12; i++){
+    const b = BULAN[i].toLowerCase();
+    const p = t.indexOf(b.slice(0,3));
+    if(p >= 0 && (hit === null || p < hit.pos)) hit = {bulan:i+1, pos:p};
+  }
+  return hit ? hit.bulan : null;
+}
+function botTahun(teks){
+  const m = teks.match(/\b(20\d\d)\b/);
+  return m ? +m[1] : null;
+}
+function botTanggal(teks){
+  // buang tahun dan nama bulan lebih dulu agar tidak terbaca sebagai tanggal
+  let t = teks.toLowerCase().replace(/\b20\d\d\b/g, " ");
+  for(const b of BULAN) t = t.split(b.toLowerCase()).join(" ");
+  t = t.replace(/tanggal|tgl/g, " ");
+  const hasil = new Set();
+  const rentang = /(\d{1,2})\s*(?:-|–|—|s\/d|sd|sampai|hingga)\s*(\d{1,2})/g;
+  let m;
+  while((m = rentang.exec(t))){
+    const a = +m[1], b = +m[2];
+    if(a >= 1 && b <= 31)
+      for(let d = Math.min(a,b); d <= Math.max(a,b); d++) hasil.add(d);
+  }
+  const sisa = t.replace(rentang, " ");
+  for(const x of (sisa.match(/\d{1,2}/g) || [])){
+    const d = +x;
+    if(d >= 1 && d <= 31) hasil.add(d);
+  }
+  return [...hasil].sort((a,b) => a-b);
+}
+// bulan sasaran: dari perintah, atau bulan yang sedang tampil
+function botSasaran(teks){
+  const b = botBulan(teks), y = botTahun(teks);
+  if(b){
+    const th = y || (filterYear ? +filterYear : new Date().getFullYear());
+    return th + "-" + pad(b);
+  }
+  const tampil = visibleKeys();
+  return tampil.length === 1 ? tampil[0] : null;
+}
+function botJudul(key){
+  const mo = state.months[key];
+  return BULAN[mo.month-1] + " " + mo.year;
+}
+
+function botJalan(teks){
+  const asli = (teks || "").trim();
+  if(!asli) return {ok:false, pesan:"Ketik perintahnya lebih dulu."};
+  const t = asli.toLowerCase();
+
+  /* --- rekap --- */
+  if(/rekap|paling sering|paling banyak|berapa kali|statistik|siapa saja/.test(t)){
+    const keys = visibleKeys();
+    if(!keys.length) return {ok:false, pesan:"Tidak ada bulan yang sedang ditampilkan."};
+    const hit = {}, total = {};
+    state.names.forEach(n => { hit[n] = 0; total[n] = 0; });
+    for(const k of keys)
+      for(const n of state.names)
+        for(const d in (state.months[k].cells[n] || {})){
+          const mk = state.months[k].cells[n][d];
+          if(mk === "M" || mk === "P"){ hit[n]++; total[n]++; }
+        }
+    const urut = state.names.slice().sort((a,b) => hit[b] - hit[a]);
+    const maks = Math.max(1, hit[urut[0]]);
+    const periode = keys.length === 1 ? botJudul(keys[0])
+                  : botJudul(keys[keys.length-1]) + " s/d " + botJudul(keys[0]);
+    let html = "<b>Rekap " + esc(periode) + "</b><table class='botTab'>";
+    for(const n of urut)
+      html += "<tr><td>" + esc(n) + "</td><td class='num'>" + hit[n] + "</td>" +
+              "<td class='bar'><i style='width:" + Math.round(hit[n]/maks*100) + "%'></i></td></tr>";
+    html += "</table>";
+    const sepi = state.names.filter(n => hit[n] === hit[urut[urut.length-1]]);
+    html += "<p class='botNote'>Terbanyak: <b>" + esc(urut[0]) + "</b> (" + hit[urut[0]] +
+            " tugas). Tersedikit: <b>" + esc(sepi.join(", ")) + "</b> (" +
+            hit[urut[urut.length-1]] + ").</p>";
+    return {ok:true, html:html, ubah:false};
+  }
+
+  /* --- tukar dua petugas --- */
+  if(/tukar|tuker|ganti jadwal|swap/.test(t)){
+    const nama = botNama(asli);
+    if(nama.length < 2)
+      return {ok:false, pesan:"Sebutkan dua nama petugas, misalnya <b>tukar Fiki dan Adit</b>."};
+    const key = botSasaran(asli);
+    if(!key) return {ok:false, pesan:"Bulan mana? Saring ke satu bulan lebih dulu, atau sebutkan bulannya."};
+    if(!state.months[key]) return {ok:false, pesan:"Bulan " + esc(key) + " belum ada."};
+    const mo = state.months[key], a = nama[0], b = nama[1];
+    const ta = mo.cells[a] || {}, tb = mo.cells[b] || {};
+    mo.cells[a] = tb; mo.cells[b] = ta;
+    return {ok:true, ubah:true,
+      html:"Jadwal <b>" + esc(a) + "</b> dan <b>" + esc(b) + "</b> ditukar di " +
+           esc(botJudul(key)) + "."};
+  }
+
+  /* --- susun / isi jadwal --- */
+  if(/susun|isi|buat|atur|jadwalkan|rotasi/.test(t)){
+    const b = botBulan(asli);
+    const y = botTahun(asli) || (filterYear ? +filterYear : new Date().getFullYear());
+    let key = b ? y + "-" + pad(b) : botSasaran(asli);
+    if(!key) return {ok:false, pesan:"Bulan mana? Contoh: <b>susun Oktober 2026</b>."};
+
+    let baru = false;
+    if(!state.months[key]){
+      const th = +key.slice(0,4), bl = +key.slice(5,7);
+      ensureHolidays(th);
+      state.months[key] = {year:th, month:bl, cells:{}};
+      baru = true;
+    }
+
+    // batasan ketersediaan: "Dewa cuti 5-9", "Herry izin 12"
+    const blokir = {};
+    const bagian = asli.split(/[,;]|(?:\bdan\b)/i);
+    for(const p of bagian){
+      if(!/cuti|izin|ijin|libur|off|tidak masuk|absen/i.test(p)) continue;
+      const nm = botNama(p);
+      const tg = botTanggal(p);
+      if(nm.length && tg.length){
+        blokir[nm[0]] = (blokir[nm[0]] || []).concat(tg);
+      }
+    }
+    // klausa lanjutan tanpa nama ("...cuti 5 sampai 9, 12, 13") ikut ke nama terakhir
+    autoFill(key, blokir);
+
+    let html = (baru ? "Bulan <b>" : "Jadwal <b>") + esc(botJudul(key)) +
+               "</b> " + (baru ? "dibuat dan diisi" : "disusun ulang") + ".";
+    const kn = Object.keys(blokir);
+    if(kn.length){
+      html += "<p class='botNote'>Dilewati: " + kn.map(n =>
+        "<b>" + esc(n) + "</b> tanggal " + blokir[n].join(", ")).join("; ") +
+        " &mdash; ditandai <i>Cuti/Izin</i>.</p>";
+    }
+    filterYear = ""; filterMonth = "";
+    return {ok:true, ubah:true, html:html, fokus:key};
+  }
+
+  /* --- kosongkan --- */
+  if(/kosongkan|hapus semua|bersihkan/.test(t)){
+    const key = botSasaran(asli);
+    if(!key || !state.months[key])
+      return {ok:false, pesan:"Bulan mana? Saring ke satu bulan lebih dulu."};
+    state.months[key].cells = {};
+    return {ok:true, ubah:true, html:"Semua tanda di " + esc(botJudul(key)) + " dikosongkan."};
+  }
+
+  return {ok:false, pesan:"Perintah belum dikenali. Lihat contoh di bawah kotak isian."};
+}
+
+const dlgBot = document.getElementById("dlgBot");
+document.getElementById("bBot").onclick = () => {
+  document.getElementById("botOut").innerHTML = "";
+  document.getElementById("botCmd").value = "";
+  dlgBot.showModal();
+  setTimeout(() => document.getElementById("botCmd").focus(), 30);
+};
+document.getElementById("botClose").onclick = () => dlgBot.close();
+document.getElementById("botEx").addEventListener("click", e => {
+  const b = e.target.closest("button[data-cmd]");
+  if(!b) return;
+  document.getElementById("botCmd").value = b.dataset.cmd;
+  document.getElementById("botCmd").focus();
+});
+function botKirim(){
+  if(!isAdmin) return;
+  const out = document.getElementById("botOut");
+  const r = botJalan(document.getElementById("botCmd").value);
+  if(r.ok){
+    if(r.ubah){ save(); buildFilters(); render(); }
+    out.className = "botOut ok";
+    out.innerHTML = r.html;
+    if(r.fokus){
+      const el = document.querySelector('.month[data-k="' + r.fokus + '"]');
+      if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+    }
+  }else{
+    out.className = "botOut bad";
+    out.innerHTML = r.pesan;
+  }
+}
+document.getElementById("botRun").onclick = botKirim;
+document.getElementById("botCmd").addEventListener("keydown", e => {
+  if(e.key === "Enter"){ e.preventDefault(); botKirim(); }
+});
 
 /* ---------- mulai ---------- */
 setPen("M");

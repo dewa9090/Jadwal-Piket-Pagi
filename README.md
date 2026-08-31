@@ -25,6 +25,24 @@ Klik sel untuk memberi tanda, klik kanan untuk menghapus.
 **Jumlah** (jumlah petugas per hari) disembunyikan dalam mode lihat saja, termasuk pada
 hasil ekspor Excel dan CSV. Rekan hanya melihat siapa bertugas kapan, tanpa rekapitulasi.
 
+## Asisten jadwal
+
+Tombol **Asisten** (khusus admin) membuka kotak perintah singkat. Perintah diterjemahkan
+oleh aturan yang tertanam di halaman — tidak ada layanan luar yang dihubungi, jadi tetap
+bekerja saat berkas dibuka tanpa internet.
+
+| Perintah                                        | Yang terjadi                                                  |
+| ----------------------------------------------- | ------------------------------------------------------------- |
+| `susun Oktober 2026`                            | Buat bulan itu bila belum ada, lalu isi rotasi merata          |
+| `susun Oktober 2026, Dewa cuti 5 sampai 9`      | Sama, tapi Dewa ditandai Cuti/Izin dan dilewati rotasi         |
+| `rekap`                                         | Hitung tugas per petugas untuk bulan yang sedang tampil        |
+| `tukar Fiki dan Adit`                           | Tukar seluruh jadwal dua petugas di bulan yang tampil          |
+| `kosongkan`                                     | Hapus semua tanda di bulan yang tampil                         |
+
+Tanggal boleh ditulis `5-9`, `5 sampai 9`, atau `3, 7 dan 12`. Bila bulan tidak disebut,
+yang dipakai adalah bulan yang sedang tampil di filter — saring ke satu bulan lebih dulu.
+Perintah di luar daftar ini ditolak dengan pesan, bukan ditebak.
+
 ## Hari libur otomatis
 
 Saat menambah bulan pada tahun yang belum punya daftar libur, daftarnya disusun sendiri
