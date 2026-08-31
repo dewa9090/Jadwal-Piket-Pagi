@@ -6,7 +6,13 @@ pemasangan apa pun — cukup buka `index.html` di browser.
 ## Cara pakai
 
 **Melihat jadwal.** Buka halaman. Semua orang masuk dalam mode lihat saja: jadwal bisa
-dibaca, difilter per tahun, diekspor ke Excel/CSV, dan dicetak.
+dibaca, difilter, diekspor ke Excel/CSV, dan dicetak.
+
+**Filter.** Dua dropdown di bilah atas menyaring per **tahun** dan per **bulan**. Daftar
+bulan menyesuaikan tahun yang sedang dipilih, jadi hanya bulan yang benar-benar ada yang
+ditawarkan. Ekspor Excel dan CSV mengikuti filter ini — pilih satu bulan lalu ekspor, dan
+berkasnya berisi bulan itu saja dengan nama seperti `Jadwal Piket September 2026.xls`.
+Cadangan data (.json) selalu memuat seluruh bulan.
 
 **Mengubah jadwal.** Klik **Masuk Admin** lalu isi kata sandi. Setelah itu muncul palet
 tanda, tombol Tambah Bulan, pengaturan petugas, dan tombol Isi Otomatis di tiap bulan.
