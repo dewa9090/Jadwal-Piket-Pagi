@@ -57,11 +57,26 @@ tampil di bawah judul halaman.
 > Karena berkas terbitan yang menang, perubahan yang belum Anda ekspor akan hilang bila
 > ada terbitan baru yang lebih mutakhir. Biasakan mengekspor setiap selesai menyunting.
 
+## Alamat halaman
+
+Repo ini terbit lewat GitHub Pages di:
+
+```
+https://<akun>.github.io/jadwal-piket/
+```
+
+Halaman memasang `<meta name="robots" content="noindex, nofollow">`, jadi tautannya bisa
+dibagikan bebas ke tim tetapi tidak ikut muncul di hasil pencarian Google.
+
 ## Batas kunci admin
 
-Kunci admin berjalan sepenuhnya di browser. Sifatnya **pencegah** — menghalangi rekan
-mengubah jadwal secara tidak sengaja atau iseng. Orang yang paham teknis masih bisa
-melewatinya lewat kode sumber halaman.
+Repo ini **publik**, jadi isi `index.html` bisa dibaca siapa saja — termasuk sandi admin
+yang tertanam di dalamnya. Kunci admin di sini murni **pencegah kekeliruan**: ia
+menghalangi rekan mengubah jadwal secara tidak sengaja, bukan menghalangi orang yang
+memang berniat menembusnya.
+
+> **Jangan pakai sandi yang Anda gunakan di layanan lain.** Perlakukan sandi ini sebagai
+> kode buka pintu biasa, bukan kredensial.
 
 Pengamanan yang sebenarnya ada di izin tulis repo ini: **hanya orang yang bisa melakukan
 push yang dapat mengubah jadwal yang dilihat tim.** Perubahan siapa pun di browsernya
