@@ -122,3 +122,5 @@ README.md
 ```
 
 Data jadwal tertanam di dalam `index.html` sebagai satu baris `const SEED = {...};`.
+Logo Jalin juga tertanam sebagai data URI, jadi berkasnya tetap utuh saat dipindah
+atau dibuka tanpa internet.
