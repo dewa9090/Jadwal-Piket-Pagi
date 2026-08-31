@@ -79,6 +79,19 @@ perbaiki bila meleset — labelnya akan hilang sendiri.
 **Nyepi, Waisak, dan cuti bersama tidak ikut terhitung.** Perhitungannya terlalu rumit
 untuk ditebak dengan aman, jadi tambahkan sendiri lewat menu Libur Nasional.
 
+## Kalau halaman masih menampilkan versi lama
+
+Browser menyimpan salinan halaman ini di cache, jadi setelah jadwal diperbarui pembaca
+bisa masih melihat versi lama beberapa menit. Halaman memeriksa sendiri ke sumbernya dan
+memunculkan bilah **"Ada jadwal versi lebih baru"** dengan tombol Muat Ulang bila memang
+tertinggal. Pemeriksaan diulang tiap kali tab dibuka kembali.
+
+Untuk memaksa segera, tekan **Ctrl+Shift+R** (Windows) di Chrome, Edge, atau Firefox.
+
+Perlu diingat, penyimpanan browser bersifat per-browser: suntingan yang disimpan di Chrome
+tidak terlihat di Firefox, dan sebaliknya. Yang dibagi ke semua orang hanyalah `index.html`
+yang sudah terkirim ke repo ini.
+
 ## Menerbitkan dengan satu klik
 
 Cara paling sederhana, tanpa token dan tanpa perintah git:
