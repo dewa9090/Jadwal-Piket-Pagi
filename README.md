@@ -26,10 +26,13 @@ sekilas di bawah layar yang menyebut petugas, tanggal, dan tanda apa yang beruba
 misalnya `Herry · 9 September 2026 — Masuk Pagi diganti Piket OD`. Bila perubahan gagal
 disimpan, yang muncul justru peringatan itu, bukan pesan berhasil.
 
-**Penanda belum diterbitkan.** Begitu ada suntingan, penanda oranye **Belum diterbitkan**
-menyala di kop dan bertahan walau halaman dimuat ulang. Penanda ini padam setelah
-**Ekspor → Berkas HTML mandiri**, sebagai pengingat bahwa suntingan baru ada di browser
-Anda dan belum masuk ke berkas yang dilihat tim.
+**Tombol Simpan.** Begitu ada suntingan, tombol **Simpan** berubah hijau dan penanda
+oranye **Belum diterbitkan** menyala di kop; keduanya bertahan walau halaman dimuat ulang.
+Klik Simpan untuk membuat berkas HTML berisi seluruh jadwal terkini — hasil unduhannya
+yang menggantikan `index.html` di repo ini. Setelah itu tombol dan penanda kembali padam.
+
+Perubahan sendiri sudah tersimpan otomatis di browser sejak tombol diklik; Simpan
+mengurus langkah berikutnya, yaitu memindahkannya ke berkas yang dilihat tim.
 
 **Yang hanya terlihat oleh admin.** Kolom **Total** (jumlah tugas per petugas) dan baris
 **Jumlah** (jumlah petugas per hari) disembunyikan dalam mode lihat saja, termasuk pada
