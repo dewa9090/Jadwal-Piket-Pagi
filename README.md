@@ -85,7 +85,7 @@ Tombol **GitHub** (khusus admin) menyambungkan halaman ke repo ini, sehingga tia
 tombol **Simpan** ditekan jadwal langsung dikirim sebagai commit baru — tanpa ekspor,
 salin berkas, atau push manual.
 
-Isi nama repo (`akun/jadwal-piket`), cabang, berkas tujuan, dan sebuah
+Isi nama repo (`dewa9090/Jadwal-Piket-Pagi`), cabang, berkas tujuan, dan sebuah
 **fine-grained personal access token** yang dibatasi pada repo ini saja dengan izin
 **Contents: Read and write**. Tekan **Uji Sambungan** untuk memastikan token diterima dan
 punya izin tulis, lalu **Simpan Pengaturan**.
@@ -132,7 +132,7 @@ karena membuka berkas versi lain.
 Repo ini terbit lewat GitHub Pages di:
 
 ```
-https://<akun>.github.io/jadwal-piket/
+https://dewa9090.github.io/Jadwal-Piket-Pagi/
 ```
 
 Halaman memasang `<meta name="robots" content="noindex, nofollow">`, jadi tautannya bisa
