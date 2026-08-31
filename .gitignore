@@ -1,0 +1,9 @@
+# berkas sementara sistem
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# cadangan / unduhan dari halaman
+*.xls
+*.csv
+Jadwal Piket.json

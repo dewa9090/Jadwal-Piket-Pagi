@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Jadwal Masuk Pagi &amp; Piket</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f4f6fa; --card:#ffffff; --ink:#1a2233; --muted:#6b7688; --line:#e2e7f0;
+    --accent:#1f6feb;
+    --weekend:#fdf1f1; --weekend-ink:#c0392b;
+    --holiday:#fff4e0; --holiday-ink:#b26a00;
+    --m:#1e8e5a; --m-bg:#e3f6ec;
+    --p:#9333ea; --p-bg:#f3e8ff;
+    --s:#c2410c; --s-bg:#ffedd5;
+    --l:#64748b; --l-bg:#eef2f7;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px rgba(16,24,40,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 "Segoe UI",Inter,system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  header{position:sticky;top:0;z-index:40;background:var(--card);border-bottom:1px solid var(--line);
+    padding:12px 20px;box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;max-width:1680px;margin:0 auto}
+  h1{font-size:17px;margin:0;font-weight:650;letter-spacing:-.01em;white-space:nowrap}
+  .sub{color:var(--muted);font-size:12px}
+  .spacer{flex:1}
+  button,select,input{font:inherit;color:var(--ink);background:var(--card);
+    border:1px solid var(--line);border-radius:8px;padding:6px 11px;transition:.12s}
+  button{cursor:pointer}
+  button:hover{border-color:var(--accent);color:var(--accent)}
+  button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  button.primary:hover{filter:brightness(1.08);color:#fff}
+  button.sm{padding:4px 9px;font-size:12px}
+  button.danger:hover{border-color:#dc2626;color:#dc2626}
+  select{cursor:pointer}
+  .pen{display:flex;gap:4px;align-items:center;background:var(--bg);padding:4px;
+    border-radius:10px;border:1px solid var(--line)}
+  .pen b{font-size:10.5px;color:var(--muted);font-weight:600;padding:0 6px;
+    text-transform:uppercase;letter-spacing:.05em}
+  .pen button{border:1px solid transparent;background:transparent;padding:5px 10px;
+    border-radius:7px;font-size:12.5px;font-weight:600}
+  .pen button[data-on="1"]{background:var(--card);border-color:var(--line);box-shadow:var(--shadow)}
+  .pen button .dot{display:inline-block;width:9px;height:9px;border-radius:3px;
+    margin-right:6px;vertical-align:0px}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;
+    padding:4px 10px;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--muted)}
+  .badge.on{background:#e8f5ee;border-color:#9cd6b6;color:#1e7a4f}
+  /* mode tampil: sembunyikan semua kontrol edit */
+  body:not([data-admin]) .adminOnly{display:none!important}
+  body:not([data-admin]) td.d{cursor:default}
+  body:not([data-admin]) td.d:hover{outline:none}
+  main{max-width:1680px;margin:0 auto;padding:20px}
+  .month{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    margin-bottom:18px;box-shadow:var(--shadow);overflow:hidden}
+  .mhead{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;
+    border-bottom:1px solid var(--line)}
+  .mhead h2{margin:0 6px 0 0;font-size:15.5px;font-weight:650}
+  .chip{font-size:11.5px;color:var(--muted);background:var(--bg);border:1px solid var(--line);
+    border-radius:20px;padding:2px 9px}
+  .mbody{overflow-x:auto}
+  table{border-collapse:separate;border-spacing:0;width:100%;min-width:920px}
+  th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:0;text-align:center}
+  thead th{background:var(--card);font-size:11px;font-weight:600;color:var(--muted);
+    padding:5px 2px;line-height:1.25;white-space:nowrap}
+  thead th .dw{display:block;font-size:9.5px;font-weight:500;opacity:.8;text-transform:uppercase}
+  th.nm,td.nm{position:sticky;left:0;z-index:5;background:var(--card);text-align:left;
+    padding:0 12px;min-width:112px;font-weight:600;font-size:13px;box-shadow:1px 0 0 var(--line)}
+  td.nm{height:34px}
+  th.tot,td.tot{min-width:54px;font-weight:650;background:var(--bg)}
+  td.d{width:34px;min-width:34px;height:34px;cursor:pointer;font-size:13px;
+    font-weight:600;user-select:none}
+  td.d:hover{outline:2px solid var(--accent);outline-offset:-2px}
+  th.we,td.we{background:var(--weekend)}
+  th.we{color:var(--weekend-ink)}
+  th.hd,td.hd{background:var(--holiday)}
+  th.hd{color:var(--holiday-ink)}
+  th.now{box-shadow:inset 0 -3px 0 var(--accent);color:var(--accent)}
+  td.mk-M{background:var(--m-bg);color:var(--m)}
+  td.mk-P{background:var(--p-bg);color:var(--p)}
+  td.mk-S{background:var(--s-bg);color:var(--s)}
+  td.mk-L{background:var(--l-bg);color:var(--l)}
+  tr.sum td{background:var(--bg);font-size:11.5px;font-weight:650;color:var(--muted);height:28px}
+  tr.sum td.warn{color:#dc2626}
+  .holbar{padding:8px 16px;border-top:1px solid var(--line);font-size:12px;color:var(--holiday-ink);
+    background:#fffaf2;display:flex;flex-wrap:wrap;gap:6px 16px}
+  .holbar b{font-weight:650}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;padding:10px 16px;font-size:12px;
+    color:var(--muted);border-top:1px solid var(--line)}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .sw{width:14px;height:14px;border-radius:4px;border:1px solid var(--line);display:inline-block}
+  dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);
+    box-shadow:0 20px 60px rgba(0,0,0,.28);padding:0;max-width:min(94vw,600px);width:100%}
+  dialog::backdrop{background:rgba(8,12,20,.5)}
+  .dh{padding:14px 18px;border-bottom:1px solid var(--line);font-weight:650;font-size:15px}
+  .dc{padding:16px 18px;max-height:62vh;overflow:auto}
+  .df{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+  .row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .row label{min-width:100px;color:var(--muted);font-size:12.5px}
+  .row input,.row select{flex:1;min-width:0}
+  .yrhead{display:flex;align-items:center;gap:8px;margin:14px 0 8px;padding-top:12px;
+    border-top:1px solid var(--line);font-weight:650;font-size:13px}
+  .yrhead:first-child{margin-top:0;padding-top:0;border-top:0}
+  .est{font-size:10px;font-weight:700;color:var(--holiday-ink);background:var(--holiday);
+    border:1px solid #f0d6a8;border-radius:5px;padding:1px 5px;white-space:nowrap}
+  .hint{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.7}
+  .warnbox{font-size:12.5px;color:#8a5300;background:#fff7e8;border:1px solid #f0d6a8;
+    border-radius:9px;padding:10px 12px;line-height:1.6;margin-bottom:14px}
+  .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:var(--card);padding:9px 16px;border-radius:10px;
+    font-size:13px;opacity:0;pointer-events:none;transition:.22s;z-index:99}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .empty{text-align:center;color:var(--muted);padding:70px 20px}
+  @media print{
+    header,.mhead button,.toast{display:none!important}
+    body{background:#fff}
+    .month{break-inside:avoid;box-shadow:none;border-color:#ccc}
+    .mbody{overflow:visible}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div>
+      <h1>Jadwal Masuk Pagi &amp; Piket</h1>
+      <div class="sub" id="subtitle"></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="pen adminOnly" id="pen">
+      <b>Tanda</b>
+      <button data-mk="M"><span class="dot" style="background:var(--m)"></span>Masuk Pagi</button>
+      <button data-mk="P"><span class="dot" style="background:var(--p)"></span>Piket OD</button>
+      <button data-mk="S"><span class="dot" style="background:var(--s)"></span>Siang</button>
+      <button data-mk="L"><span class="dot" style="background:var(--l)"></span>Cuti/Izin</button>
+    </div>
+    <select id="fYear"></select>
+    <button id="bAdd" class="primary adminOnly">+ Tambah Bulan</button>
+    <button id="bNames" class="adminOnly">Petugas</button>
+    <button id="bHol">Libur Nasional</button>
+    <button id="bExport">Ekspor</button>
+    <button id="bImport" class="adminOnly">Impor</button>
+    <button id="bPrint">Cetak</button>
+    <button id="bLogin">Masuk Admin</button>
+    <span class="badge on adminOnly" id="adminBadge">Mode Admin</span>
+    <button id="bPw" class="adminOnly">Ubah Sandi</button>
+    <button id="bLogout" class="adminOnly">Keluar</button>
+  </div>
+</header>
+<main id="app"></main>
+<div class="toast" id="toast"></div>
+
+<dialog id="dlgLogin">
+  <form method="dialog">
+    <div class="dh">Masuk sebagai Admin</div>
+    <div class="dc">
+      <div class="row"><label>Kata sandi</label><input type="password" id="pwInput" autocomplete="current-password"></div>
+      <div class="hint">Hanya admin yang dapat menambah bulan, mengubah tanda jadwal, mengatur petugas, dan menyunting daftar libur. Tanpa masuk, halaman ini hanya bisa dilihat dan dicetak.</div>
+    </div>
+    <div class="df"><button value="cancel">Batal</button><button value="ok" class="primary">Masuk</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgPw">
+  <form method="dialog">
+    <div class="dh">Ubah Kata Sandi Admin</div>
+    <div class="dc">
+      <div class="row"><label>Sandi lama</label><input type="password" id="pwOld"></div>
+      <div class="row"><label>Sandi baru</label><input type="password" id="pwNew"></div>
+      <div class="row"><label>Ulangi baru</label><input type="password" id="pwNew2"></div>
+      <div class="hint">Sandi baru hanya berlaku di browser ini. Agar berlaku untuk semua orang, setelah mengubah sandi pakai <b>Ekspor &rarr; Berkas HTML mandiri</b> lalu bagikan berkas hasilnya sebagai pengganti file lama.</div>
+    </div>
+    <div class="df"><button value="cancel">Batal</button><button value="ok" class="primary">Simpan</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgAdd">
+  <form method="dialog">
+    <div class="dh">Tambah Bulan</div>
+    <div class="dc">
+      <div class="row"><label>Bulan</label><select id="aMonth"></select></div>
+      <div class="row"><label>Tahun</label><input type="number" id="aYear" min="2000" max="2100"></div>
+      <div class="row"><label>Isi awal</label>
+        <select id="aFill">
+          <option value="none">Kosong (isi manual)</option>
+          <option value="auto" selected>Isi otomatis - rotasi merata di hari kerja</option>
+        </select>
+      </div>
+      <div class="hint">Tanggal, nama hari, akhir pekan, dan hari libur nasional menyesuaikan otomatis. Bila tahun tersebut belum punya daftar libur, daftarnya dibuat otomatis lebih dulu.</div>
+    </div>
+    <div class="df"><button value="cancel">Batal</button><button value="ok" class="primary">Tambah</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgNames">
+  <div class="dh">Daftar Petugas</div>
+  <div class="dc" id="nameList"></div>
+  <div class="df">
+    <button id="nAdd">+ Tambah Petugas</button>
+    <button class="primary" id="nClose">Selesai</button>
+  </div>
+</dialog>
+
+<dialog id="dlgHol">
+  <div class="dh">Hari Libur Nasional</div>
+  <div class="dc">
+    <div class="warnbox adminOnly">
+      <b>Susun Daftar Libur</b> menghitung otomatis untuk tahun mana pun.
+      Tanggal tetap (1 Jan, 1 Mei, 1 Juni, 17 Agustus, 25 Desember) dan hari raya Kristen
+      (Wafat serta Kenaikan Isa Almasih) dihitung pasti. Hari raya Islam dan Tahun Baru Imlek
+      ditandai <i class="est">perkiraan</i> karena bisa meleset satu hari dari penetapan resmi.
+      <b>Nyepi, Waisak, dan cuti bersama belum termasuk</b> &mdash; silakan tambahkan sendiri.
+      Cocokkan dengan SKB 3 Menteri sebelum dipakai.
+    </div>
+    <div class="row adminOnly" style="margin-bottom:14px">
+      <label>Buat otomatis</label>
+      <input type="number" id="hYear" min="2000" max="2100" style="max-width:110px">
+      <button id="hGen" class="primary">Susun Daftar Libur</button>
+    </div>
+    <div id="holList"></div>
+  </div>
+  <div class="df">
+    <button id="hAdd" class="adminOnly">+ Tambah Tanggal</button>
+    <button class="primary" id="hClose">Selesai</button>
+  </div>
+</dialog>
+
+<dialog id="dlgExport">
+  <div class="dh">Ekspor</div>
+  <div class="dc">
+    <div class="hint" style="margin:0 0 14px">Pilih format keluaran.</div>
+    <div class="row"><button id="xXls" style="flex:1">Excel (.xls)</button></div>
+    <div class="row"><button id="xCsv" style="flex:1">CSV (.csv)</button></div>
+    <div class="row adminOnly"><button id="xJson" style="flex:1">Cadangan data (.json)</button></div>
+    <div class="row adminOnly"><button id="xHtml" style="flex:1" class="primary">Berkas HTML mandiri (untuk dibagikan)</button></div>
+    <div class="hint adminOnly">Berkas HTML mandiri berisi seluruh jadwal dan sandi terkini yang sudah menyatu di dalamnya, sehingga rekan yang membukanya langsung melihat data terbaru dalam mode lihat saja.</div>
+  </div>
+  <div class="df"><button id="xClose">Tutup</button></div>
+</dialog>
+
+<script>
+const SEED = {"names":["Syifa","Herry","Fiki","Adit","Dewa","Andri","Rizal"],"months":{"2025-07":{"year":2025,"month":7,"cells":{"Syifa":{"2":"M","9":"M","30":"M"},"Herry":{"3":"M","16":"M","31":"M"},"Fiki":{"7":"M","15":"M","23":"M"},"Adit":{"4":"M","14":"M","22":"M"},"Dewa":{"10":"M","17":"M","21":"M"},"Andri":{"1":"M","11":"M","25":"M","29":"M"},"Rizal":{"8":"M","18":"M","24":"M","28":"M"}}},"2025-08":{"year":2025,"month":8,"cells":{"Syifa":{"11":"M","20":"M","28":"M"},"Herry":{"8":"M","29":"M"},"Fiki":{"7":"M","13":"M","19":"M","27":"M"},"Adit":{"1":"M","12":"M","25":"M"},"Dewa":{"6":"M","22":"M"},"Andri":{"4":"M","14":"M","26":"M"},"Rizal":{"5":"M","15":"M","21":"M"}}},"2025-09":{"year":2025,"month":9,"cells":{"Syifa":{"9":"M","16":"M","25":"M"},"Herry":{"1":"M","19":"M","23":"M","30":"M"},"Fiki":{"8":"M","18":"M","26":"M"},"Adit":{"3":"M","17":"M","24":"M"},"Dewa":{"12":"M","22":"M"},"Andri":{"4":"M","11":"M","29":"M"},"Rizal":{"2":"M","10":"M","15":"M"}}},"2025-10":{"year":2025,"month":10,"cells":{"Syifa":{"3":"M","8":"M","16":"M","31":"M"},"Herry":{"6":"M","15":"M","22":"M","28":"M"},"Fiki":{"1":"M","10":"M","23":"M"},"Adit":{"2":"M","13":"M","21":"M"},"Dewa":{"17":"M","27":"M"},"Andri":{"9":"M","20":"M","29":"M"},"Rizal":{"7":"M","14":"M","24":"M","30":"M"}}},"2025-11":{"year":2025,"month":11,"cells":{"Syifa":{"5":"M","19":"M","28":"M"},"Herry":{"6":"M","14":"M","20":"M","26":"M"},"Fiki":{"3":"M","13":"M","21":"M"},"Adit":{"4":"M","12":"M","24":"M"},"Dewa":{"7":"M"},"Andri":{"11":"M","17":"M","25":"M"},"Rizal":{"10":"M","18":"M","27":"M"}}},"2025-12":{"year":2025,"month":12,"cells":{"Syifa":{"5":"M","17":"M","24":"M"},"Herry":{"4":"M","11":"M","19":"M","31":"M"},"Fiki":{"3":"M","9":"M","22":"M"},"Adit":{"2":"M","15":"M","30":"M"},"Dewa":{"1":"M","12":"M"},"Andri":{"10":"M","18":"M","29":"M"},"Rizal":{"8":"M","16":"M","23":"M"}}},"2026-01":{"year":2026,"month":1,"cells":{"Syifa":{"9":"M","14":"M"},"Herry":{"6":"M","12":"M","23":"M","29":"M"},"Fiki":{"2":"M","8":"M","22":"M"},"Adit":{"13":"M","21":"M","28":"M"},"Dewa":{"20":"M","26":"M"},"Andri":{"7":"M","19":"M","30":"M"},"Rizal":{"5":"M","15":"M","27":"M"}}},"2026-02":{"year":2026,"month":2,"cells":{"Syifa":{"3":"M","10":"M","18":"M"},"Herry":{"9":"M","19":"M","25":"M"},"Fiki":{"6":"M","11":"M","23":"M"},"Adit":{"5":"M","12":"M","26":"M"},"Dewa":{"4":"M"},"Andri":{"13":"M","24":"M"},"Rizal":{"2":"M","20":"M","27":"M"}}},"2026-03":{"year":2026,"month":3,"cells":{"Syifa":{"2":"M","12":"M"},"Herry":{"6":"M","16":"M"},"Fiki":{"5":"M","13":"M","27":"M"},"Adit":{"9":"M","17":"M","31":"M"},"Dewa":{"3":"M","26":"M"},"Andri":{"4":"M","11":"M","30":"M"},"Rizal":{"10":"M","25":"M"}}},"2026-04":{"year":2026,"month":4,"cells":{"Syifa":{"10":"M","15":"M","22":"M"},"Herry":{"2":"M","13":"M","21":"M"},"Fiki":{"1":"M","8":"M","14":"M","24":"M"},"Adit":{"7":"M","20":"M","28":"M"},"Dewa":{"16":"M","30":"M"},"Andri":{"9":"M","17":"M","27":"M"},"Rizal":{"6":"M","23":"M","29":"M"}}},"2026-05":{"year":2026,"month":5,"cells":{"Syifa":{"7":"M","17":"P","22":"M"},"Herry":{"4":"M","16":"P","21":"M"},"Fiki":{"2":"P","11":"M","25":"M"},"Adit":{"5":"M","12":"M","20":"M"},"Dewa":{"13":"M","24":"S","26":"M"},"Andri":{"1":"M","8":"M","19":"M"},"Rizal":{"6":"M","10":"S","18":"M","29":"M"}}},"2026-06":{"year":2026,"month":6,"cells":{"Syifa":{"2":"M","17":"M","19":"M"},"Herry":{"5":"M","11":"M","22":"M"},"Fiki":{"3":"M","15":"M","25":"M"},"Adit":{"8":"M","12":"M","24":"M"},"Dewa":{"10":"M","30":"M"},"Andri":{"4":"M","23":"M","29":"M"},"Rizal":{"9":"M","18":"M","26":"M"}}},"2026-07":{"year":2026,"month":7,"cells":{"Syifa":{"1":"M","8":"M","11":"P","15":"M"},"Herry":{"6":"M","16":"M","18":"P","22":"M","30":"M"},"Fiki":{"2":"M","13":"M","23":"M","31":"M"},"Adit":{"3":"M","14":"M","24":"M"},"Dewa":{"7":"M","19":"S","21":"M","28":"M"},"Andri":{"9":"M","17":"M","27":"M"},"Rizal":{"10":"M","20":"M","29":"M"}}},"2026-08":{"year":2026,"month":8,"cells":{"Syifa":{"7":"M","13":"M","21":"M"},"Herry":{"4":"M","14":"M","23":"S","31":"M"},"Fiki":{"10":"M","16":"P","20":"M"},"Dewa":{"19":"M","24":"M"},"Adit":{"3":"M","12":"M","17":"S","27":"M"},"Andri":{"5":"M","11":"M","15":"P","26":"M"},"Rizal":{"6":"M","18":"M","22":"S","28":"M"}}},"2026-09":{"year":2026,"month":9,"cells":{"Syifa":{"3":"M","17":"M","28":"M"},"Herry":{"9":"M","18":"M","29":"M"},"Fiki":{"4":"M","10":"M","21":"M","30":"M"},"Dewa":{"1":"M","11":"M","24":"M"},"Adit":{"2":"M","14":"M","23":"M"},"Andri":{"8":"M","15":"M","22":"M"},"Rizal":{"7":"M","16":"M","25":"M"}}}},"holidays":[{"date":"2026-01-01","name":"Tahun Baru Masehi 2026"},{"date":"2026-02-17","name":"Tahun Baru Imlek 2577 Kongzili"},{"date":"2026-03-19","name":"Hari Suci Nyepi (Tahun Baru Saka 1948)"},{"date":"2026-03-21","name":"Idul Fitri 1447 H (hari pertama)"},{"date":"2026-03-22","name":"Idul Fitri 1447 H (hari kedua)"},{"date":"2026-04-03","name":"Wafat Isa Almasih"},{"date":"2026-05-01","name":"Hari Buruh Internasional"},{"date":"2026-05-14","name":"Kenaikan Isa Almasih"},{"date":"2026-05-15","name":"Cuti Bersama Kenaikan Isa Almasih"},{"date":"2026-05-27","name":"Idul Adha 1447 H"},{"date":"2026-05-28","name":"Cuti Bersama Idul Adha 1447 H"},{"date":"2026-05-31","name":"Hari Raya Waisak 2570 BE"},{"date":"2026-06-01","name":"Hari Lahir Pancasila"},{"date":"2026-08-17","name":"HUT Kemerdekaan RI ke-81"},{"date":"2026-08-25","name":"Maulid Nabi Muhammad SAW 1448 H"},{"date":"2026-12-25","name":"Hari Raya Natal"}],"admin":{"hash":"1g6mb70-126me2y"},"stamp":"2026-08-31T11:11:07+07:00"};
+
+const MK = {
+  M:{label:"Masuk Pagi", glyph:"✓"},
+  P:{label:"Piket OD",   glyph:"P"},
+  S:{label:"Masuk Siang",glyph:"S"},
+  L:{label:"Cuti / Izin",glyph:"C"}
+};
+const ORDER = ["M","P","S","L"];
+const BULAN = ["Januari","Februari","Maret","April","Mei","Juni","Juli",
+               "Agustus","September","Oktober","November","Desember"];
+const HARI = ["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
+const KEY = "jadwalPiket.v1";
+const SKEY = "jadwalPiket.admin";
+
+let state = load();
+let pen = "M";
+let filterYear = "";
+let isAdmin = false;
+
+/* ---------- penyimpanan ---------- */
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){
+      const d = JSON.parse(raw);
+      if(d && d.months && d.names){
+        // Bila berkas yang dibuka lebih baru daripada salinan tersimpan di browser ini,
+        // isi berkas yang menang - supaya terbitan baru dari admin selalu terlihat.
+        if((SEED.stamp || "") > (d.stamp || "")) return JSON.parse(JSON.stringify(SEED));
+        d.holidays = d.holidays || [];
+        d.admin = d.admin || SEED.admin;
+        d.stamp = d.stamp || SEED.stamp;
+        return d;
+      }
+    }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(SEED));
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch(e){ toast("Perubahan tidak bisa disimpan di browser ini"); }
+}
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove("on"), 2100);
+}
+const pad = n => String(n).padStart(2,"0");
+const daysIn = (y,m) => new Date(y, m, 0).getDate();
+const iso = (y,m,d) => y+"-"+pad(m)+"-"+pad(d);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const monthKeys = () => Object.keys(state.months).sort();
+
+/* ---------- sandi admin ---------- */
+function hashPw(str){
+  const s = "jp$" + str;
+  let a = 0x811c9dc5, b = 0x9e3779b9;
+  for(let i=0; i<s.length; i++){
+    const c = s.charCodeAt(i);
+    a = Math.imul(a ^ c, 16777619) >>> 0;
+    b = (Math.imul(b + c, 2654435761) >>> 0);
+    b = ((b << 13) | (b >>> 19)) >>> 0;
+  }
+  return a.toString(36) + "-" + b.toString(36);
+}
+function setAdmin(on){
+  isAdmin = on;
+  if(on) document.body.setAttribute("data-admin","1");
+  else document.body.removeAttribute("data-admin");
+  document.getElementById("bLogin").style.display = on ? "none" : "";
+  try{ on ? sessionStorage.setItem(SKEY,"1") : sessionStorage.removeItem(SKEY); }catch(e){}
+  render();
+}
+
+/* ---------- mesin hari libur ---------- */
+function easter(y){
+  const a=y%19, b=Math.floor(y/100), c=y%100, d=Math.floor(b/4), e=b%4,
+        f=Math.floor((b+8)/25), g=Math.floor((b-f+1)/3),
+        h=(19*a+b-d-g+15)%30, i=Math.floor(c/4), k=c%4,
+        l=(32+2*e+2*i-h-k)%7, m=Math.floor((a+11*h+22*l)/451),
+        mo=Math.floor((h+l-7*m+114)/31), da=((h+l-7*m+114)%31)+1;
+  return new Date(y, mo-1, da);
+}
+const shift = (dt,n) => new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()+n);
+const isoOf = dt => iso(dt.getFullYear(), dt.getMonth()+1, dt.getDate());
+
+// telusuri satu tahun Masehi memakai kalender lain (Hijriah / Imlek) lewat Intl
+function scanCalendar(year, calendar){
+  let fmt;
+  try{
+    fmt = new Intl.DateTimeFormat("en-u-ca-"+calendar,
+      {year:"numeric", month:"numeric", day:"numeric", timeZone:"UTC"});
+    if(!fmt.resolvedOptions().calendar.startsWith(calendar.split("-")[0])) return null;
+  }catch(e){ return null; }
+  const out = [];
+  for(let t = Date.UTC(year,0,1); t <= Date.UTC(year,11,31); t += 86400000){
+    const parts = {};
+    for(const p of fmt.formatToParts(new Date(t))) parts[p.type] = p.value;
+    out.push({
+      iso: new Date(t).toISOString().slice(0,10),
+      y: parseInt(parts.year,10),
+      m: parts.month,
+      d: parseInt(parts.day,10)
+    });
+  }
+  return out;
+}
+function generateHolidays(year){
+  const list = [];
+  const add = (dateIso, name, est) => { if(dateIso) list.push({date:dateIso, name:name, est:est||undefined}); };
+
+  // 1. tanggal tetap setiap tahun
+  add(iso(year,1,1),  "Tahun Baru Masehi");
+  add(iso(year,5,1),  "Hari Buruh Internasional");
+  add(iso(year,6,1),  "Hari Lahir Pancasila");
+  add(iso(year,8,17), "HUT Kemerdekaan RI");
+  add(iso(year,12,25),"Hari Raya Natal");
+
+  // 2. hari raya Kristen - dihitung pasti dari tanggal Paskah
+  const e = easter(year);
+  add(isoOf(shift(e,-2)), "Wafat Isa Almasih");
+  add(isoOf(shift(e,39)), "Kenaikan Isa Almasih");
+
+  // 3. hari raya Islam - perkiraan kalender Umm al-Qura
+  const hij = scanCalendar(year, "islamic-umalqura") || scanCalendar(year, "islamic");
+  if(hij){
+    const pick = (mm,dd) => { const r = hij.find(x => x.m == mm && x.d === dd); return r ? r.iso : null; };
+    add(pick(7,27),  "Isra Miraj Nabi Muhammad SAW", true);
+    const fitri = pick(10,1);
+    if(fitri){
+      add(fitri, "Idul Fitri (hari pertama)", true);
+      add(isoOf(shift(new Date(fitri+"T00:00:00"),1)), "Idul Fitri (hari kedua)", true);
+    }
+    add(pick(12,10), "Idul Adha", true);
+    add(pick(1,1),   "Tahun Baru Islam (1 Muharram)", true);
+    add(pick(3,12),  "Maulid Nabi Muhammad SAW", true);
+  }
+
+  // 4. Tahun Baru Imlek - perkiraan kalender Tionghoa
+  const chi = scanCalendar(year, "chinese");
+  if(chi){
+    const r = chi.find(x => String(x.m) === "1" && x.d === 1);
+    if(r) add(r.iso, "Tahun Baru Imlek", true);
+  }
+
+  list.sort((a,b) => a.date.localeCompare(b.date));
+  return list.filter(h => h.date.slice(0,4) === String(year));
+}
+function ensureHolidays(year){
+  const has = state.holidays.some(h => (h.date||"").startsWith(String(year)));
+  if(has) return 0;
+  const gen = generateHolidays(year);
+  state.holidays = state.holidays.concat(gen);
+  state.holidays.sort((a,b) => (a.date||"").localeCompare(b.date||""));
+  return gen.length;
+}
+function holidayMap(){
+  const map = {};
+  for(const h of state.holidays)
+    if(h.date) map[h.date] = {name: h.name || "Libur Nasional", est: !!h.est};
+  return map;
+}
+
+/* ---------- tampilan ---------- */
+function render(){
+  const app = document.getElementById("app");
+  const hol = holidayMap();
+  const now = new Date();
+  const todayIso = iso(now.getFullYear(), now.getMonth()+1, now.getDate());
+  const keys = monthKeys().filter(k => !filterYear || k.startsWith(filterYear));
+
+  let ver = "";
+  if(state.stamp){
+    const t = new Date(state.stamp);
+    if(!isNaN(t)) ver = " · data " + t.getDate() + " " + BULAN[t.getMonth()] + " " + t.getFullYear();
+  }
+  document.getElementById("subtitle").textContent =
+    state.names.length + " petugas · " + monthKeys().length + " bulan · " +
+    (isAdmin ? "mode admin" : "mode lihat saja") + ver;
+
+  if(!keys.length){
+    app.innerHTML = '<div class="empty">Belum ada bulan yang ditampilkan.</div>';
+    return;
+  }
+
+  let html = "";
+  for(const key of keys.slice().reverse()){
+    const mo = state.months[key];
+    const nd = daysIn(mo.year, mo.month);
+    const days = [];
+    for(let d=1; d<=nd; d++){
+      const dow = new Date(mo.year, mo.month-1, d).getDay();
+      const k = iso(mo.year, mo.month, d);
+      days.push({d, dow, iso:k, we:(dow===0||dow===6), hol:hol[k]||null, now:k===todayIso});
+    }
+    const libur = days.filter(x => x.hol);
+
+    html += '<section class="month" data-k="'+key+'">';
+    html += '<div class="mhead"><h2>'+BULAN[mo.month-1]+" "+mo.year+"</h2>";
+    html += '<span class="chip">'+days.filter(x=>!x.we&&!x.hol).length+" hari kerja</span>";
+    if(libur.length) html += '<span class="chip">'+libur.length+" hari libur nasional</span>";
+    html += '<div class="spacer"></div>';
+    html += '<button class="sm adminOnly" data-act="auto">Isi Otomatis</button>';
+    html += '<button class="sm adminOnly" data-act="clear">Kosongkan</button>';
+    html += '<button class="sm danger adminOnly" data-act="del">Hapus Bulan</button>';
+    html += '</div><div class="mbody"><table><thead><tr>';
+    html += '<th class="nm">Nama \\ Tgl</th>';
+    for(const x of days){
+      const cls = ["d", x.we?"we":"", x.hol?"hd":"", x.now?"now":""].join(" ");
+      const tip = x.hol ? ' title="'+esc(x.hol.name + (x.hol.est ? " (perkiraan)" : ""))+'"' : "";
+      html += '<th class="'+cls+'"'+tip+">"+x.d+'<span class="dw">'+HARI[x.dow]+"</span></th>";
+    }
+    html += '<th class="tot">Total</th></tr></thead><tbody>';
+
+    for(const name of state.names){
+      const row = (mo.cells[name] = mo.cells[name] || {});
+      let tot = 0;
+      html += '<tr><td class="nm">'+esc(name)+"</td>";
+      for(const x of days){
+        const mk = row[x.d] || "";
+        if(mk === "M" || mk === "P") tot++;
+        const cls = ["d", x.we?"we":"", x.hol?"hd":"", mk?("mk-"+mk):""].join(" ");
+        const tip = mk ? MK[mk].label+" – "+x.d+" "+BULAN[mo.month-1]
+                       : (x.hol ? x.hol.name : "");
+        html += '<td class="'+cls+'" data-n="'+esc(name)+'" data-d="'+x.d+'"'+
+                (tip ? ' title="'+esc(tip)+'"' : "")+">"+(mk?MK[mk].glyph:"")+"</td>";
+      }
+      html += '<td class="tot">'+tot+"</td></tr>";
+    }
+
+    html += '<tr class="sum"><td class="nm">Jumlah</td>';
+    let grand = 0;
+    for(const x of days){
+      let c = 0;
+      for(const name of state.names){
+        const mk = (mo.cells[name]||{})[x.d];
+        if(mk === "M" || mk === "P") c++;
+      }
+      grand += c;
+      const warn = (!x.we && !x.hol && c === 0) ? " warn" : "";
+      html += '<td class="'+(x.we?"we":"")+(x.hol?" hd":"")+warn+'">'+(c||"")+"</td>";
+    }
+    html += '<td class="tot">'+grand+"</td></tr></tbody></table></div>";
+
+    if(libur.length){
+      html += '<div class="holbar">';
+      for(const x of libur)
+        html += "<span><b>"+x.d+" "+BULAN[mo.month-1]+"</b> – "+esc(x.hol.name)+
+                (x.hol.est ? ' <i class="est">perkiraan</i>' : "")+"</span>";
+      html += "</div>";
+    }
+
+    html += '<div class="legend">';
+    for(const k of ORDER){
+      const v = k.toLowerCase();
+      html += '<span><i class="sw" style="background:var(--'+v+'-bg);border-color:var(--'+v+
+              ')"></i>'+MK[k].label+"</span>";
+    }
+    html += '<span><i class="sw" style="background:var(--weekend)"></i>Akhir Pekan</span>';
+    html += '<span><i class="sw" style="background:var(--holiday)"></i>Libur Nasional</span>';
+    if(isAdmin) html += "<span>Klik sel untuk memberi tanda · klik kanan untuk menghapus</span>";
+    html += "</div></section>";
+  }
+  app.innerHTML = html;
+}
+
+function buildYearFilter(){
+  const sel = document.getElementById("fYear");
+  const years = [...new Set(monthKeys().map(k => k.slice(0,4)))].sort().reverse();
+  sel.innerHTML = '<option value="">Semua tahun</option>' +
+    years.map(y => '<option value="'+y+'"'+(y===filterYear?" selected":"")+">Tahun "+y+"</option>").join("");
+}
+
+/* ---------- menyunting sel (khusus admin) ---------- */
+document.getElementById("app").addEventListener("click", e => {
+  if(!isAdmin) return;
+  const btn = e.target.closest("button[data-act]");
+  if(btn){
+    const key = btn.closest(".month").dataset.k;
+    const mo = state.months[key];
+    const act = btn.dataset.act;
+    if(act === "del"){
+      if(!confirm("Hapus bulan "+BULAN[mo.month-1]+" "+mo.year+"?")) return;
+      delete state.months[key]; save(); buildYearFilter(); render(); toast("Bulan dihapus");
+    }else if(act === "clear"){
+      if(!confirm("Kosongkan semua tanda di bulan ini?")) return;
+      mo.cells = {}; save(); render(); toast("Bulan dikosongkan");
+    }else if(act === "auto"){
+      autoFill(key); save(); render(); toast("Jadwal terisi otomatis");
+    }
+    return;
+  }
+  const td = e.target.closest("td.d");
+  if(!td) return;
+  const key = td.closest(".month").dataset.k;
+  const row = (state.months[key].cells[td.dataset.n] = state.months[key].cells[td.dataset.n] || {});
+  if(row[td.dataset.d] === pen) delete row[td.dataset.d];
+  else row[td.dataset.d] = pen;
+  save(); render();
+});
+document.getElementById("app").addEventListener("contextmenu", e => {
+  if(!isAdmin) return;
+  const td = e.target.closest("td.d");
+  if(!td) return;
+  e.preventDefault();
+  const row = state.months[td.closest(".month").dataset.k].cells[td.dataset.n];
+  if(row){ delete row[td.dataset.d]; save(); render(); }
+});
+
+/* ---------- pengisian otomatis ---------- */
+function autoFill(key){
+  const mo = state.months[key];
+  const hol = holidayMap();
+  const work = [];
+  for(let d=1; d<=daysIn(mo.year, mo.month); d++){
+    const dow = new Date(mo.year, mo.month-1, d).getDay();
+    if(dow === 0 || dow === 6) continue;
+    if(hol[iso(mo.year, mo.month, d)]) continue;
+    work.push(d);
+  }
+  mo.cells = {};
+  state.names.forEach(n => mo.cells[n] = {});
+  if(!state.names.length) return;
+  let start = 0;
+  const prev = monthKeys().filter(k => k < key).pop();
+  if(prev){
+    const p = state.months[prev];
+    let lastName = null, lastDay = -1;
+    for(const n of state.names)
+      for(const d in (p.cells[n]||{}))
+        if(p.cells[n][d] === "M" && +d > lastDay){ lastDay = +d; lastName = n; }
+    if(lastName) start = (state.names.indexOf(lastName) + 1) % state.names.length;
+  }
+  work.forEach((d,i) => { mo.cells[state.names[(start+i) % state.names.length]][d] = "M"; });
+}
+
+/* ---------- pilihan tanda ---------- */
+function setPen(mk){
+  pen = mk;
+  document.querySelectorAll("#pen button").forEach(b => b.dataset.on = (b.dataset.mk === mk) ? "1" : "0");
+}
+document.getElementById("pen").addEventListener("click", e => {
+  const b = e.target.closest("button[data-mk]");
+  if(b) setPen(b.dataset.mk);
+});
+
+/* ---------- masuk / keluar admin ---------- */
+const dlgLogin = document.getElementById("dlgLogin");
+document.getElementById("bLogin").onclick = () => {
+  document.getElementById("pwInput").value = "";
+  dlgLogin.showModal();
+  setTimeout(()=>document.getElementById("pwInput").focus(), 30);
+};
+dlgLogin.addEventListener("close", () => {
+  if(dlgLogin.returnValue !== "ok") return;
+  const v = document.getElementById("pwInput").value;
+  document.getElementById("pwInput").value = "";
+  if(hashPw(v) === state.admin.hash){ setAdmin(true); toast("Berhasil masuk sebagai admin"); }
+  else toast("Kata sandi salah");
+});
+document.getElementById("bLogout").onclick = () => { setAdmin(false); toast("Kembali ke mode lihat saja"); };
+
+const dlgPw = document.getElementById("dlgPw");
+document.getElementById("bPw").onclick = () => {
+  ["pwOld","pwNew","pwNew2"].forEach(i => document.getElementById(i).value = "");
+  dlgPw.showModal();
+};
+dlgPw.addEventListener("close", () => {
+  if(dlgPw.returnValue !== "ok") return;
+  const o = document.getElementById("pwOld").value,
+        n = document.getElementById("pwNew").value,
+        n2 = document.getElementById("pwNew2").value;
+  ["pwOld","pwNew","pwNew2"].forEach(i => document.getElementById(i).value = "");
+  if(hashPw(o) !== state.admin.hash) return toast("Sandi lama salah");
+  if(n.length < 4) return toast("Sandi baru minimal 4 karakter");
+  if(n !== n2) return toast("Ulangan sandi baru tidak sama");
+  state.admin.hash = hashPw(n); save();
+  toast("Sandi diperbarui di browser ini");
+});
+
+/* ---------- tambah bulan ---------- */
+const dlgAdd = document.getElementById("dlgAdd");
+document.getElementById("aMonth").innerHTML =
+  BULAN.map((b,i) => '<option value="'+(i+1)+'">'+b+"</option>").join("");
+document.getElementById("bAdd").onclick = () => {
+  const keys = monthKeys();
+  let y, m;
+  if(keys.length){
+    const last = keys[keys.length-1];
+    y = +last.slice(0,4); m = +last.slice(5,7) + 1;
+    if(m > 12){ m = 1; y++; }
+  }else{
+    const t = new Date(); y = t.getFullYear(); m = t.getMonth()+1;
+  }
+  document.getElementById("aYear").value = y;
+  document.getElementById("aMonth").value = m;
+  dlgAdd.showModal();
+};
+dlgAdd.addEventListener("close", () => {
+  if(dlgAdd.returnValue !== "ok" || !isAdmin) return;
+  const y = +document.getElementById("aYear").value;
+  const m = +document.getElementById("aMonth").value;
+  if(!y || !m) return;
+  const key = y+"-"+pad(m);
+  if(state.months[key] && !confirm(BULAN[m-1]+" "+y+" sudah ada. Timpa?")) return;
+  const added = ensureHolidays(y);
+  state.months[key] = {year:y, month:m, cells:{}};
+  if(document.getElementById("aFill").value === "auto") autoFill(key);
+  filterYear = "";
+  save(); buildYearFilter(); render();
+  toast(BULAN[m-1]+" "+y+" ditambahkan" + (added ? " · "+added+" hari libur "+y+" ikut dibuat" : ""));
+  const el = document.querySelector('.month[data-k="'+key+'"]');
+  if(el) el.scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+/* ---------- petugas ---------- */
+const dlgNames = document.getElementById("dlgNames");
+function renderNames(){
+  document.getElementById("nameList").innerHTML = state.names.map((n,i) =>
+    '<div class="row"><input type="text" value="'+esc(n)+'" data-i="'+i+'">'+
+    '<button class="sm" data-up="'+i+'" title="Naikkan">↑</button>'+
+    '<button class="sm" data-down="'+i+'" title="Turunkan">↓</button>'+
+    '<button class="sm danger" data-del="'+i+'">Hapus</button></div>').join("")
+    || '<div class="hint" style="margin:0">Belum ada petugas.</div>';
+}
+document.getElementById("bNames").onclick = () => { renderNames(); dlgNames.showModal(); };
+document.getElementById("nAdd").onclick = () => {
+  state.names.push("Petugas "+(state.names.length+1)); save(); renderNames(); render();
+};
+document.getElementById("nClose").onclick = () => dlgNames.close();
+document.getElementById("nameList").addEventListener("change", e => {
+  const inp = e.target.closest("input[data-i]");
+  if(!inp) return;
+  const i = +inp.dataset.i, old = state.names[i], neu = inp.value.trim();
+  if(!neu || neu === old){ inp.value = old; return; }
+  state.names[i] = neu;
+  for(const k in state.months){
+    const c = state.months[k].cells;
+    if(c[old]){ c[neu] = c[old]; delete c[old]; }
+  }
+  save(); render();
+});
+document.getElementById("nameList").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  const swap = (i,j) => {
+    if(j < 0 || j >= state.names.length) return;
+    const t = state.names[i]; state.names[i] = state.names[j]; state.names[j] = t;
+  };
+  if(b.dataset.del !== undefined){
+    const i = +b.dataset.del, n = state.names[i];
+    if(!confirm("Hapus "+n+" beserta semua tandanya?")) return;
+    state.names.splice(i,1);
+    for(const k in state.months) delete state.months[k].cells[n];
+  }
+  else if(b.dataset.up !== undefined) swap(+b.dataset.up, +b.dataset.up - 1);
+  else if(b.dataset.down !== undefined) swap(+b.dataset.down, +b.dataset.down + 1);
+  else return;
+  save(); renderNames(); render();
+});
+
+/* ---------- daftar libur ---------- */
+const dlgHol = document.getElementById("dlgHol");
+function renderHol(){
+  state.holidays.sort((a,b) => (a.date||"").localeCompare(b.date||""));
+  const byYear = {};
+  state.holidays.forEach((h,i) => {
+    const y = (h.date||"----").slice(0,4);
+    (byYear[y] = byYear[y] || []).push([h,i]);
+  });
+  const years = Object.keys(byYear).sort().reverse();
+  let html = "";
+  if(!years.length) html = '<div class="hint" style="margin:0">Belum ada tanggal libur.</div>';
+  for(const y of years){
+    html += '<div class="yrhead">Tahun '+y+'<span class="chip">'+byYear[y].length+" tanggal</span>"+
+            '<div class="spacer"></div><button class="sm danger adminOnly" data-delyear="'+y+'">Hapus tahun ini</button></div>';
+    for(const [h,i] of byYear[y]){
+      html += '<div class="row"><input type="date" value="'+esc(h.date||"")+'" data-d="'+i+'"'+
+              (isAdmin?"":" disabled")+'>'+
+              '<input type="text" value="'+esc(h.name||"")+'" data-n="'+i+'" placeholder="Keterangan"'+
+              (isAdmin?"":" disabled")+">"+
+              (h.est ? '<span class="est">perkiraan</span>' : "")+
+              '<button class="sm danger adminOnly" data-del="'+i+'">Hapus</button></div>';
+    }
+  }
+  document.getElementById("holList").innerHTML = html;
+}
+document.getElementById("bHol").onclick = () => {
+  document.getElementById("hYear").value = new Date().getFullYear() + 1;
+  renderHol(); dlgHol.showModal();
+};
+document.getElementById("hGen").onclick = () => {
+  const y = +document.getElementById("hYear").value;
+  if(!y) return;
+  const gen = generateHolidays(y);
+  if(!gen.length) return toast("Tidak ada tanggal yang bisa dihitung untuk "+y);
+  const existing = state.holidays.filter(h => (h.date||"").startsWith(String(y)));
+  if(existing.length && !confirm("Tahun "+y+" sudah punya "+existing.length+
+      " tanggal. Ganti dengan daftar hasil perhitungan ("+gen.length+" tanggal)?")) return;
+  state.holidays = state.holidays.filter(h => !(h.date||"").startsWith(String(y))).concat(gen);
+  save(); renderHol(); render();
+  toast(gen.length+" hari libur tahun "+y+" disusun");
+};
+document.getElementById("hAdd").onclick = () => {
+  const t = new Date();
+  state.holidays.push({date: iso(t.getFullYear(), t.getMonth()+1, t.getDate()), name:""});
+  save(); renderHol();
+};
+document.getElementById("hClose").onclick = () => { dlgHol.close(); render(); };
+document.getElementById("holList").addEventListener("change", e => {
+  if(!isAdmin) return;
+  const inp = e.target.closest("input"); if(!inp) return;
+  if(inp.dataset.d !== undefined){
+    state.holidays[+inp.dataset.d].date = inp.value;
+    delete state.holidays[+inp.dataset.d].est;
+  }
+  if(inp.dataset.n !== undefined) state.holidays[+inp.dataset.n].name = inp.value;
+  save();
+});
+document.getElementById("holList").addEventListener("click", e => {
+  if(!isAdmin) return;
+  const b = e.target.closest("button"); if(!b) return;
+  if(b.dataset.del !== undefined) state.holidays.splice(+b.dataset.del, 1);
+  else if(b.dataset.delyear !== undefined){
+    const y = b.dataset.delyear;
+    if(!confirm("Hapus semua tanggal libur tahun "+y+"?")) return;
+    state.holidays = state.holidays.filter(h => !(h.date||"").startsWith(y));
+  }else return;
+  save(); renderHol();
+});
+
+/* ---------- ekspor / impor ---------- */
+const dlgExport = document.getElementById("dlgExport");
+document.getElementById("bExport").onclick = () => dlgExport.showModal();
+document.getElementById("xClose").onclick = () => dlgExport.close();
+
+function download(name, mime, text){
+  const blob = new Blob(["﻿"+text], {type:mime+";charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+function buildRows(){
+  const hol = holidayMap(), out = [];
+  for(const key of monthKeys()){
+    const mo = state.months[key], nd = daysIn(mo.year, mo.month);
+    out.push([BULAN[mo.month-1]+" "+mo.year]);
+    const head = ["Nama \\ Tgl"];
+    for(let d=1; d<=nd; d++) head.push(pad(d)+"-"+BULAN[mo.month-1].slice(0,3));
+    head.push("Total");
+    out.push(head);
+    for(const n of state.names){
+      const row = [n]; let tot = 0;
+      for(let d=1; d<=nd; d++){
+        const mk = (mo.cells[n]||{})[d] || "";
+        if(mk === "M" || mk === "P") tot++;
+        row.push(mk ? MK[mk].glyph : "");
+      }
+      row.push(tot); out.push(row);
+    }
+    const sum = ["Jumlah"]; let g = 0;
+    for(let d=1; d<=nd; d++){
+      let c = 0;
+      for(const n of state.names){
+        const mk = (mo.cells[n]||{})[d];
+        if(mk === "M" || mk === "P") c++;
+      }
+      g += c; sum.push(c);
+    }
+    sum.push(g); out.push(sum);
+    const lib = ["Keterangan"];
+    for(let d=1; d<=nd; d++){
+      const dow = new Date(mo.year, mo.month-1, d).getDay();
+      const h = hol[iso(mo.year, mo.month, d)];
+      lib.push(h ? h.name : (dow===0||dow===6 ? "Akhir Pekan" : ""));
+    }
+    out.push(lib, []);
+  }
+  return out;
+}
+document.getElementById("xCsv").onclick = () => {
+  const csv = buildRows().map(r => r.map(v => {
+    const s = String(v === undefined || v === null ? "" : v);
+    return /[";\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+  }).join(";")).join("\r\n");
+  download("Jadwal Piket.csv", "text/csv", csv);
+  dlgExport.close();
+};
+document.getElementById("xXls").onclick = () => {
+  let t = '<meta charset="utf-8"><table border="1">';
+  for(const r of buildRows())
+    t += "<tr>" + r.map(v => "<td>"+esc(v === undefined || v === null ? "" : v)+"</td>").join("") + "</tr>";
+  t += "</table>";
+  download("Jadwal Piket.xls", "application/vnd.ms-excel", t);
+  dlgExport.close();
+};
+document.getElementById("xJson").onclick = () => {
+  if(!isAdmin) return;
+  download("Jadwal Piket.json", "application/json", JSON.stringify(state, null, 1));
+  dlgExport.close();
+};
+document.getElementById("xHtml").onclick = () => {
+  if(!isAdmin) return;
+  const c = document.documentElement.cloneNode(true);
+  c.querySelector("#app").innerHTML = "";
+  c.querySelector("#toast").textContent = "";
+  c.querySelector("#toast").className = "toast";
+  c.querySelector("#fYear").innerHTML = "";
+  c.querySelector("#aMonth").innerHTML = "";
+  c.querySelector("#nameList").innerHTML = "";
+  c.querySelector("#holList").innerHTML = "";
+  c.querySelectorAll("dialog").forEach(d => d.removeAttribute("open"));
+  c.querySelectorAll("input").forEach(i => i.removeAttribute("value"));
+  c.querySelectorAll("#pen button").forEach(b => b.removeAttribute("data-on"));
+  c.querySelector("body").removeAttribute("data-admin");
+  c.querySelector("#bLogin").removeAttribute("style");
+  state.stamp = new Date().toISOString();
+  save();
+  const json = JSON.stringify(state).replace(/\$/g, "$$$$").replace(/<\//g, "<\\/");
+  let html = "<!DOCTYPE html>\n" + c.outerHTML;
+  if(!/^const SEED = .*$/m.test(html)) return toast("Gagal menyusun berkas HTML");
+  html = html.replace(/^const SEED = .*$/m, "const SEED = " + json + ";");
+  download("Jadwal Piket.html", "text/html", html);
+  dlgExport.close();
+  toast("Berkas HTML mandiri dibuat");
+};
+document.getElementById("bImport").onclick = () => {
+  if(!isAdmin) return;
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = ".json,application/json";
+  inp.onchange = () => {
+    const f = inp.files[0]; if(!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try{
+        const d = JSON.parse(rd.result);
+        if(!d.months || !d.names) throw 0;
+        if(!confirm("Ganti seluruh data dengan isi berkas ini?")) return;
+        d.holidays = d.holidays || [];
+        d.admin = d.admin || state.admin;
+        state = d; save(); buildYearFilter(); render(); toast("Data berhasil diimpor");
+      }catch(e){ toast("Berkas tidak dikenali"); }
+    };
+    rd.readAsText(f);
+  };
+  inp.click();
+};
+document.getElementById("bPrint").onclick = () => window.print();
+document.getElementById("fYear").onchange = e => { filterYear = e.target.value; render(); };
+
+/* ---------- mulai ---------- */
+setPen("M");
+buildYearFilter();
+let resume = false;
+try{ resume = sessionStorage.getItem(SKEY) === "1"; }catch(e){}
+setAdmin(resume);
+</script>
+</body>
+</html>
