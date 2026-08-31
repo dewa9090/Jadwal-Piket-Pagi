@@ -15,6 +15,10 @@ Status admin hilang saat tab ditutup.
 Tanda yang tersedia: **Masuk Pagi**, **Piket OD**, **Masuk Siang**, **Cuti/Izin**.
 Klik sel untuk memberi tanda, klik kanan untuk menghapus.
 
+**Yang hanya terlihat oleh admin.** Kolom **Total** (jumlah tugas per petugas) dan baris
+**Jumlah** (jumlah petugas per hari) disembunyikan dalam mode lihat saja, termasuk pada
+hasil ekspor Excel dan CSV. Rekan hanya melihat siapa bertugas kapan, tanpa rekapitulasi.
+
 ## Hari libur otomatis
 
 Saat menambah bulan pada tahun yang belum punya daftar libur, daftarnya disusun sendiri
