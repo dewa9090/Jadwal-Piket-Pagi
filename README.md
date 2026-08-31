@@ -96,12 +96,13 @@ git commit -m "Perbarui jadwal <bulan>"
 git push
 ```
 
-Berkas yang lebih baru selalu menang atas salinan yang tersimpan di browser pembaca,
-jadi tim otomatis melihat versi terbaru begitu halaman dimuat ulang. Tanggal terbit
-tampil di bawah judul halaman.
+Berkas yang lebih baru menang atas salinan yang tersimpan di browser pembaca, jadi tim
+otomatis melihat versi terbaru begitu halaman dimuat ulang.
 
-> Karena berkas terbitan yang menang, perubahan yang belum Anda ekspor akan hilang bila
-> ada terbitan baru yang lebih mutakhir. Biasakan mengekspor setiap selesai menyunting.
+Pengecualiannya: bila browser Anda masih menyimpan suntingan yang **belum diterbitkan**,
+suntingan itulah yang dipertahankan meski berkas yang dibuka lebih baru. Halaman memberi
+tahu lewat pesan sekilas saat dibuka. Ini menjaga kerja admin agar tidak hilang hanya
+karena membuka berkas versi lain.
 
 ## Alamat halaman
 
