@@ -79,7 +79,22 @@ perbaiki bila meleset — labelnya akan hilang sendiri.
 **Nyepi, Waisak, dan cuti bersama tidak ikut terhitung.** Perhitungannya terlalu rumit
 untuk ditebak dengan aman, jadi tambahkan sendiri lewat menu Libur Nasional.
 
-## Kirim otomatis ke GitHub
+## Menerbitkan dengan satu klik
+
+Cara paling sederhana, tanpa token dan tanpa perintah git:
+
+1. Di halaman jadwal, masuk sebagai admin, sunting, lalu klik **Simpan**
+2. Klik **Ekspor → Berkas HTML mandiri** (berkas masuk ke folder Downloads)
+3. Klik dua kali **Terbitkan Jadwal.bat** di folder repo ini
+
+Skrip mengambil berkas hasil ekspor terbaru dari Downloads, memasangnya sebagai
+`index.html`, lalu commit dan push. Git memakai kredensial GitHub yang sudah tersimpan di
+komputer, jadi tidak ada token yang perlu diurus. Halaman untuk tim ikut berubah dalam
+1–2 menit.
+
+Bila tidak ada yang berubah, skrip mengatakannya dan tidak membuat commit kosong.
+
+## Kirim otomatis ke GitHub (opsional)
 
 Tombol **GitHub** (khusus admin) menyambungkan halaman ke repo ini, sehingga tiap kali
 tombol **Simpan** ditekan jadwal langsung dikirim sebagai commit baru — tanpa ekspor,
