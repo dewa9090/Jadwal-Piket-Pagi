@@ -79,6 +79,29 @@ perbaiki bila meleset — labelnya akan hilang sendiri.
 **Nyepi, Waisak, dan cuti bersama tidak ikut terhitung.** Perhitungannya terlalu rumit
 untuk ditebak dengan aman, jadi tambahkan sendiri lewat menu Libur Nasional.
 
+## Kirim otomatis ke GitHub
+
+Tombol **GitHub** (khusus admin) menyambungkan halaman ke repo ini, sehingga tiap kali
+tombol **Simpan** ditekan jadwal langsung dikirim sebagai commit baru — tanpa ekspor,
+salin berkas, atau push manual.
+
+Isi nama repo (`akun/jadwal-piket`), cabang, berkas tujuan, dan sebuah
+**fine-grained personal access token** yang dibatasi pada repo ini saja dengan izin
+**Contents: Read and write**. Tekan **Uji Sambungan** untuk memastikan token diterima dan
+punya izin tulis, lalu **Simpan Pengaturan**.
+
+> **Token disimpan hanya di browser Anda**, pada tempat terpisah dari data jadwal, dan
+> tidak pernah ikut ke dalam berkas yang dikirim. Halaman memeriksa hal ini sebelum tiap
+> pengiriman dan membatalkannya bila token sampai terbawa. Jangan pernah menaruh token
+> langsung di dalam `index.html` — repo ini publik.
+
+Siapa pun yang memakai komputer dan browser yang sama bisa memakai token itu. Pada
+komputer bersama, tekan **Lupakan Token** setelah selesai.
+
+Bila pengiriman gagal — token kedaluwarsa, jaringan mati, berkas di GitHub berubah lebih
+dulu — jadwal tetap aman tersimpan di browser, pesannya menyebut penyebabnya, dan penanda
+tetap menyala sampai berhasil terkirim. Tombol **Kirim Sekarang** mengulanginya.
+
 ## Menerbitkan perubahan ke tim
 
 Perubahan yang Anda buat tersimpan di browser Anda sendiri, bukan di dalam berkas.
@@ -141,5 +164,6 @@ README.md
 ```
 
 Data jadwal tertanam di dalam `index.html` sebagai satu baris `const SEED = {...};`.
+Pengaturan GitHub **tidak** ikut di sana — letaknya di penyimpanan browser masing-masing.
 Logo Jalin juga tertanam sebagai data URI, jadi berkasnya tetap utuh saat dipindah
 atau dibuka tanpa internet.
