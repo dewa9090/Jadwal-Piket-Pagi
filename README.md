@@ -88,6 +88,16 @@ tertinggal. Pemeriksaan diulang tiap kali tab dibuka kembali.
 
 Untuk memaksa segera, tekan **Ctrl+Shift+R** (Windows) di Chrome, Edge, atau Firefox.
 
+Bila sebuah browser terlanjur menyimpan jadwal lama, buka alamat berikut sekali di browser
+itu untuk membuang salinannya dan mengambil ulang dari versi terbitan:
+
+```
+https://dewa9090.github.io/Jadwal-Piket-Pagi/?bersih=1
+```
+
+Alamat berbeda ini sekaligus melewati cache, jadi tidak perlu muat ulang paksa lagi.
+Pengaturan GitHub tidak ikut terhapus, sehingga token admin tetap terpasang.
+
 Perlu diingat, penyimpanan browser bersifat per-browser: suntingan yang disimpan di Chrome
 tidak terlihat di Firefox, dan sebaliknya. Yang dibagi ke semua orang hanyalah `index.html`
 yang sudah terkirim ke repo ini.
