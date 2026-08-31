@@ -51,6 +51,9 @@
   .badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;
     padding:4px 10px;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--muted)}
   .badge.on{background:#e8f5ee;border-color:#9cd6b6;color:#1e7a4f}
+  .badge.warn{background:var(--holiday);border-color:#f0d6a8;color:var(--holiday-ink)}
+  .badge.warn::before{content:"";width:7px;height:7px;border-radius:50%;
+    background:var(--holiday-ink);flex:none}
   /* mode tampil: sembunyikan semua kontrol edit */
   body:not([data-admin]) .adminOnly{display:none!important}
   body:not([data-admin]) td.d{cursor:default}
@@ -168,6 +171,7 @@
     <button id="bPrint">Cetak</button>
     <button id="bLogin">Masuk Admin</button>
     <span class="badge on adminOnly" id="adminBadge">Mode Admin</span>
+    <span class="badge warn adminOnly" id="pubBadge" hidden>Belum diterbitkan</span>
     <button id="bPw" class="adminOnly">Ubah Sandi</button>
     <button id="bLogout" class="adminOnly">Keluar</button>
   </div>
@@ -294,7 +298,7 @@
 </dialog>
 
 <script>
-const SEED = {"names":["Syifa","Herry","Fiki","Adit","Dewa","Andri","Rizal"],"months":{"2025-07":{"year":2025,"month":7,"cells":{"Syifa":{"2":"M","9":"M","30":"M"},"Herry":{"3":"M","16":"M","31":"M"},"Fiki":{"7":"M","15":"M","23":"M"},"Adit":{"4":"M","14":"M","22":"M"},"Dewa":{"10":"M","17":"M","21":"M"},"Andri":{"1":"M","11":"M","25":"M","29":"M"},"Rizal":{"8":"M","18":"M","24":"M","28":"M"}}},"2025-08":{"year":2025,"month":8,"cells":{"Syifa":{"11":"M","20":"M","28":"M"},"Herry":{"8":"M","29":"M"},"Fiki":{"7":"M","13":"M","19":"M","27":"M"},"Adit":{"1":"M","12":"M","25":"M"},"Dewa":{"6":"M","22":"M"},"Andri":{"4":"M","14":"M","26":"M"},"Rizal":{"5":"M","15":"M","21":"M"}}},"2025-09":{"year":2025,"month":9,"cells":{"Syifa":{"9":"M","16":"M","25":"M"},"Herry":{"1":"M","19":"M","23":"M","30":"M"},"Fiki":{"8":"M","18":"M","26":"M"},"Adit":{"3":"M","17":"M","24":"M"},"Dewa":{"12":"M","22":"M"},"Andri":{"4":"M","11":"M","29":"M"},"Rizal":{"2":"M","10":"M","15":"M"}}},"2025-10":{"year":2025,"month":10,"cells":{"Syifa":{"3":"M","8":"M","16":"M","31":"M"},"Herry":{"6":"M","15":"M","22":"M","28":"M"},"Fiki":{"1":"M","10":"M","23":"M"},"Adit":{"2":"M","13":"M","21":"M"},"Dewa":{"17":"M","27":"M"},"Andri":{"9":"M","20":"M","29":"M"},"Rizal":{"7":"M","14":"M","24":"M","30":"M"}}},"2025-11":{"year":2025,"month":11,"cells":{"Syifa":{"5":"M","19":"M","28":"M"},"Herry":{"6":"M","14":"M","20":"M","26":"M"},"Fiki":{"3":"M","13":"M","21":"M"},"Adit":{"4":"M","12":"M","24":"M"},"Dewa":{"7":"M"},"Andri":{"11":"M","17":"M","25":"M"},"Rizal":{"10":"M","18":"M","27":"M"}}},"2025-12":{"year":2025,"month":12,"cells":{"Syifa":{"5":"M","17":"M","24":"M"},"Herry":{"4":"M","11":"M","19":"M","31":"M"},"Fiki":{"3":"M","9":"M","22":"M"},"Adit":{"2":"M","15":"M","30":"M"},"Dewa":{"1":"M","12":"M"},"Andri":{"10":"M","18":"M","29":"M"},"Rizal":{"8":"M","16":"M","23":"M"}}},"2026-01":{"year":2026,"month":1,"cells":{"Syifa":{"9":"M","14":"M"},"Herry":{"6":"M","12":"M","23":"M","29":"M"},"Fiki":{"2":"M","8":"M","22":"M"},"Adit":{"13":"M","21":"M","28":"M"},"Dewa":{"20":"M","26":"M"},"Andri":{"7":"M","19":"M","30":"M"},"Rizal":{"5":"M","15":"M","27":"M"}}},"2026-02":{"year":2026,"month":2,"cells":{"Syifa":{"3":"M","10":"M","18":"M"},"Herry":{"9":"M","19":"M","25":"M"},"Fiki":{"6":"M","11":"M","23":"M"},"Adit":{"5":"M","12":"M","26":"M"},"Dewa":{"4":"M"},"Andri":{"13":"M","24":"M"},"Rizal":{"2":"M","20":"M","27":"M"}}},"2026-03":{"year":2026,"month":3,"cells":{"Syifa":{"2":"M","12":"M"},"Herry":{"6":"M","16":"M"},"Fiki":{"5":"M","13":"M","27":"M"},"Adit":{"9":"M","17":"M","31":"M"},"Dewa":{"3":"M","26":"M"},"Andri":{"4":"M","11":"M","30":"M"},"Rizal":{"10":"M","25":"M"}}},"2026-04":{"year":2026,"month":4,"cells":{"Syifa":{"10":"M","15":"M","22":"M"},"Herry":{"2":"M","13":"M","21":"M"},"Fiki":{"1":"M","8":"M","14":"M","24":"M"},"Adit":{"7":"M","20":"M","28":"M"},"Dewa":{"16":"M","30":"M"},"Andri":{"9":"M","17":"M","27":"M"},"Rizal":{"6":"M","23":"M","29":"M"}}},"2026-05":{"year":2026,"month":5,"cells":{"Syifa":{"7":"M","17":"P","22":"M"},"Herry":{"4":"M","16":"P","21":"M"},"Fiki":{"2":"P","11":"M","25":"M"},"Adit":{"5":"M","12":"M","20":"M"},"Dewa":{"13":"M","24":"S","26":"M"},"Andri":{"1":"M","8":"M","19":"M"},"Rizal":{"6":"M","10":"S","18":"M","29":"M"}}},"2026-06":{"year":2026,"month":6,"cells":{"Syifa":{"2":"M","17":"M","19":"M"},"Herry":{"5":"M","11":"M","22":"M"},"Fiki":{"3":"M","15":"M","25":"M"},"Adit":{"8":"M","12":"M","24":"M"},"Dewa":{"10":"M","30":"M"},"Andri":{"4":"M","23":"M","29":"M"},"Rizal":{"9":"M","18":"M","26":"M"}}},"2026-07":{"year":2026,"month":7,"cells":{"Syifa":{"1":"M","8":"M","11":"P","15":"M"},"Herry":{"6":"M","16":"M","18":"P","22":"M","30":"M"},"Fiki":{"2":"M","13":"M","23":"M","31":"M"},"Adit":{"3":"M","14":"M","24":"M"},"Dewa":{"7":"M","19":"S","21":"M","28":"M"},"Andri":{"9":"M","17":"M","27":"M"},"Rizal":{"10":"M","20":"M","29":"M"}}},"2026-08":{"year":2026,"month":8,"cells":{"Syifa":{"7":"M","13":"M","21":"M"},"Herry":{"4":"M","14":"M","23":"S","31":"M"},"Fiki":{"10":"M","16":"P","20":"M"},"Dewa":{"19":"M","24":"M"},"Adit":{"3":"M","12":"M","17":"S","27":"M"},"Andri":{"5":"M","11":"M","15":"P","26":"M"},"Rizal":{"6":"M","18":"M","22":"S","28":"M"}}},"2026-09":{"year":2026,"month":9,"cells":{"Syifa":{"3":"M","17":"M","28":"M"},"Herry":{"9":"M","18":"M","29":"M"},"Fiki":{"4":"M","10":"M","21":"M","30":"M"},"Dewa":{"1":"M","11":"M","24":"M"},"Adit":{"2":"M","14":"M","23":"M"},"Andri":{"8":"M","15":"M","22":"M"},"Rizal":{"7":"M","16":"M","25":"M"}}}},"holidays":[{"date":"2026-01-01","name":"Tahun Baru Masehi 2026"},{"date":"2026-02-17","name":"Tahun Baru Imlek 2577 Kongzili"},{"date":"2026-03-19","name":"Hari Suci Nyepi (Tahun Baru Saka 1948)"},{"date":"2026-03-21","name":"Idul Fitri 1447 H (hari pertama)"},{"date":"2026-03-22","name":"Idul Fitri 1447 H (hari kedua)"},{"date":"2026-04-03","name":"Wafat Isa Almasih"},{"date":"2026-05-01","name":"Hari Buruh Internasional"},{"date":"2026-05-14","name":"Kenaikan Isa Almasih"},{"date":"2026-05-15","name":"Cuti Bersama Kenaikan Isa Almasih"},{"date":"2026-05-27","name":"Idul Adha 1447 H"},{"date":"2026-05-28","name":"Cuti Bersama Idul Adha 1447 H"},{"date":"2026-05-31","name":"Hari Raya Waisak 2570 BE"},{"date":"2026-06-01","name":"Hari Lahir Pancasila"},{"date":"2026-08-17","name":"HUT Kemerdekaan RI ke-81"},{"date":"2026-08-25","name":"Maulid Nabi Muhammad SAW 1448 H"},{"date":"2026-12-25","name":"Hari Raya Natal"}],"admin":{"hash":"1g6mb70-126me2y"},"stamp":"2026-08-31T13:33:03+07:00"};
+const SEED = {"names":["Syifa","Herry","Fiki","Adit","Dewa","Andri","Rizal"],"months":{"2025-07":{"year":2025,"month":7,"cells":{"Syifa":{"2":"M","9":"M","30":"M"},"Herry":{"3":"M","16":"M","31":"M"},"Fiki":{"7":"M","15":"M","23":"M"},"Adit":{"4":"M","14":"M","22":"M"},"Dewa":{"10":"M","17":"M","21":"M"},"Andri":{"1":"M","11":"M","25":"M","29":"M"},"Rizal":{"8":"M","18":"M","24":"M","28":"M"}}},"2025-08":{"year":2025,"month":8,"cells":{"Syifa":{"11":"M","20":"M","28":"M"},"Herry":{"8":"M","29":"M"},"Fiki":{"7":"M","13":"M","19":"M","27":"M"},"Adit":{"1":"M","12":"M","25":"M"},"Dewa":{"6":"M","22":"M"},"Andri":{"4":"M","14":"M","26":"M"},"Rizal":{"5":"M","15":"M","21":"M"}}},"2025-09":{"year":2025,"month":9,"cells":{"Syifa":{"9":"M","16":"M","25":"M"},"Herry":{"1":"M","19":"M","23":"M","30":"M"},"Fiki":{"8":"M","18":"M","26":"M"},"Adit":{"3":"M","17":"M","24":"M"},"Dewa":{"12":"M","22":"M"},"Andri":{"4":"M","11":"M","29":"M"},"Rizal":{"2":"M","10":"M","15":"M"}}},"2025-10":{"year":2025,"month":10,"cells":{"Syifa":{"3":"M","8":"M","16":"M","31":"M"},"Herry":{"6":"M","15":"M","22":"M","28":"M"},"Fiki":{"1":"M","10":"M","23":"M"},"Adit":{"2":"M","13":"M","21":"M"},"Dewa":{"17":"M","27":"M"},"Andri":{"9":"M","20":"M","29":"M"},"Rizal":{"7":"M","14":"M","24":"M","30":"M"}}},"2025-11":{"year":2025,"month":11,"cells":{"Syifa":{"5":"M","19":"M","28":"M"},"Herry":{"6":"M","14":"M","20":"M","26":"M"},"Fiki":{"3":"M","13":"M","21":"M"},"Adit":{"4":"M","12":"M","24":"M"},"Dewa":{"7":"M"},"Andri":{"11":"M","17":"M","25":"M"},"Rizal":{"10":"M","18":"M","27":"M"}}},"2025-12":{"year":2025,"month":12,"cells":{"Syifa":{"5":"M","17":"M","24":"M"},"Herry":{"4":"M","11":"M","19":"M","31":"M"},"Fiki":{"3":"M","9":"M","22":"M"},"Adit":{"2":"M","15":"M","30":"M"},"Dewa":{"1":"M","12":"M"},"Andri":{"10":"M","18":"M","29":"M"},"Rizal":{"8":"M","16":"M","23":"M"}}},"2026-01":{"year":2026,"month":1,"cells":{"Syifa":{"9":"M","14":"M"},"Herry":{"6":"M","12":"M","23":"M","29":"M"},"Fiki":{"2":"M","8":"M","22":"M"},"Adit":{"13":"M","21":"M","28":"M"},"Dewa":{"20":"M","26":"M"},"Andri":{"7":"M","19":"M","30":"M"},"Rizal":{"5":"M","15":"M","27":"M"}}},"2026-02":{"year":2026,"month":2,"cells":{"Syifa":{"3":"M","10":"M","18":"M"},"Herry":{"9":"M","19":"M","25":"M"},"Fiki":{"6":"M","11":"M","23":"M"},"Adit":{"5":"M","12":"M","26":"M"},"Dewa":{"4":"M"},"Andri":{"13":"M","24":"M"},"Rizal":{"2":"M","20":"M","27":"M"}}},"2026-03":{"year":2026,"month":3,"cells":{"Syifa":{"2":"M","12":"M"},"Herry":{"6":"M","16":"M"},"Fiki":{"5":"M","13":"M","27":"M"},"Adit":{"9":"M","17":"M","31":"M"},"Dewa":{"3":"M","26":"M"},"Andri":{"4":"M","11":"M","30":"M"},"Rizal":{"10":"M","25":"M"}}},"2026-04":{"year":2026,"month":4,"cells":{"Syifa":{"10":"M","15":"M","22":"M"},"Herry":{"2":"M","13":"M","21":"M"},"Fiki":{"1":"M","8":"M","14":"M","24":"M"},"Adit":{"7":"M","20":"M","28":"M"},"Dewa":{"16":"M","30":"M"},"Andri":{"9":"M","17":"M","27":"M"},"Rizal":{"6":"M","23":"M","29":"M"}}},"2026-05":{"year":2026,"month":5,"cells":{"Syifa":{"7":"M","17":"P","22":"M"},"Herry":{"4":"M","16":"P","21":"M"},"Fiki":{"2":"P","11":"M","25":"M"},"Adit":{"5":"M","12":"M","20":"M"},"Dewa":{"13":"M","24":"S","26":"M"},"Andri":{"1":"M","8":"M","19":"M"},"Rizal":{"6":"M","10":"S","18":"M","29":"M"}}},"2026-06":{"year":2026,"month":6,"cells":{"Syifa":{"2":"M","17":"M","19":"M"},"Herry":{"5":"M","11":"M","22":"M"},"Fiki":{"3":"M","15":"M","25":"M"},"Adit":{"8":"M","12":"M","24":"M"},"Dewa":{"10":"M","30":"M"},"Andri":{"4":"M","23":"M","29":"M"},"Rizal":{"9":"M","18":"M","26":"M"}}},"2026-07":{"year":2026,"month":7,"cells":{"Syifa":{"1":"M","8":"M","11":"P","15":"M"},"Herry":{"6":"M","16":"M","18":"P","22":"M","30":"M"},"Fiki":{"2":"M","13":"M","23":"M","31":"M"},"Adit":{"3":"M","14":"M","24":"M"},"Dewa":{"7":"M","19":"S","21":"M","28":"M"},"Andri":{"9":"M","17":"M","27":"M"},"Rizal":{"10":"M","20":"M","29":"M"}}},"2026-08":{"year":2026,"month":8,"cells":{"Syifa":{"7":"M","13":"M","21":"M"},"Herry":{"4":"M","14":"M","23":"S","31":"M"},"Fiki":{"10":"M","16":"P","20":"M"},"Dewa":{"19":"M","24":"M"},"Adit":{"3":"M","12":"M","17":"S","27":"M"},"Andri":{"5":"M","11":"M","15":"P","26":"M"},"Rizal":{"6":"M","18":"M","22":"S","28":"M"}}},"2026-09":{"year":2026,"month":9,"cells":{"Syifa":{"3":"M","17":"M","28":"M"},"Herry":{"9":"M","18":"M","29":"M"},"Fiki":{"4":"M","10":"M","21":"M","30":"M"},"Dewa":{"1":"M","11":"M","24":"M"},"Adit":{"2":"M","14":"M","23":"M"},"Andri":{"8":"M","15":"M","22":"M"},"Rizal":{"7":"M","16":"M","25":"M"}}}},"holidays":[{"date":"2026-01-01","name":"Tahun Baru Masehi 2026"},{"date":"2026-02-17","name":"Tahun Baru Imlek 2577 Kongzili"},{"date":"2026-03-19","name":"Hari Suci Nyepi (Tahun Baru Saka 1948)"},{"date":"2026-03-21","name":"Idul Fitri 1447 H (hari pertama)"},{"date":"2026-03-22","name":"Idul Fitri 1447 H (hari kedua)"},{"date":"2026-04-03","name":"Wafat Isa Almasih"},{"date":"2026-05-01","name":"Hari Buruh Internasional"},{"date":"2026-05-14","name":"Kenaikan Isa Almasih"},{"date":"2026-05-15","name":"Cuti Bersama Kenaikan Isa Almasih"},{"date":"2026-05-27","name":"Idul Adha 1447 H"},{"date":"2026-05-28","name":"Cuti Bersama Idul Adha 1447 H"},{"date":"2026-05-31","name":"Hari Raya Waisak 2570 BE"},{"date":"2026-06-01","name":"Hari Lahir Pancasila"},{"date":"2026-08-17","name":"HUT Kemerdekaan RI ke-81"},{"date":"2026-08-25","name":"Maulid Nabi Muhammad SAW 1448 H"},{"date":"2026-12-25","name":"Hari Raya Natal"}],"admin":{"hash":"1g6mb70-126me2y"},"stamp":"2026-08-31T13:39:06+07:00"};
 
 const MK = {
   M:{label:"Masuk Pagi", glyph:"✓"},
@@ -336,9 +340,18 @@ function load(){
   }catch(e){}
   return JSON.parse(JSON.stringify(SEED));
 }
-function save(){
+function save(adaUbah){
+  if(adaUbah !== false) state.belumTerbit = true;
+  let ok = true;
   try{ localStorage.setItem(KEY, JSON.stringify(state)); }
-  catch(e){ toast("Perubahan tidak bisa disimpan di browser ini"); }
+  catch(e){ ok = false; toast("Perubahan tidak tersimpan di browser ini"); }
+  tandaTerbit();
+  return ok;
+}
+// tampilkan penanda selama masih ada suntingan yang belum masuk ke berkas
+function tandaTerbit(){
+  const b = document.getElementById("pubBadge");
+  if(b) b.hidden = !state.belumTerbit;
 }
 function toast(msg){
   const t = document.getElementById("toast");
@@ -616,18 +629,37 @@ document.getElementById("app").addEventListener("click", e => {
   const td = e.target.closest("td.d");
   if(!td) return;
   const key = td.closest(".month").dataset.k;
-  const row = (state.months[key].cells[td.dataset.n] = state.months[key].cells[td.dataset.n] || {});
-  if(row[td.dataset.d] === pen) delete row[td.dataset.d];
-  else row[td.dataset.d] = pen;
-  save(); render();
+  const nm = td.dataset.n, d = td.dataset.d, mo = state.months[key];
+  const kapan = nm + " · " + d + " " + BULAN[mo.month-1] + " " + mo.year;
+  const row = (mo.cells[nm] = mo.cells[nm] || {});
+  const lama = row[d];
+  let pesan;
+  if(lama === pen){
+    delete row[d];
+    pesan = kapan + " — tanda " + MK[lama].label + " dilepas";
+  }else{
+    row[d] = pen;
+    pesan = kapan + (lama ? " — " + MK[lama].label + " diganti " + MK[pen].label
+                          : " — ditandai " + MK[pen].label);
+  }
+  if(save()) toast(pesan);
+  render();
 });
 document.getElementById("app").addEventListener("contextmenu", e => {
   if(!isAdmin) return;
   const td = e.target.closest("td.d");
   if(!td) return;
   e.preventDefault();
-  const row = state.months[td.closest(".month").dataset.k].cells[td.dataset.n];
-  if(row){ delete row[td.dataset.d]; save(); render(); }
+  const mo = state.months[td.closest(".month").dataset.k];
+  const row = mo.cells[td.dataset.n];
+  if(row && row[td.dataset.d]){
+    const lama = row[td.dataset.d];
+    delete row[td.dataset.d];
+    const pesan = td.dataset.n + " · " + td.dataset.d + " " + BULAN[mo.month-1] + " " +
+                  mo.year + " — tanda " + MK[lama].label + " dihapus";
+    if(save()) toast(pesan);
+    render();
+  }
 });
 
 /* ---------- pengisian otomatis ---------- */
@@ -977,7 +1009,8 @@ document.getElementById("xHtml").onclick = () => {
   c.querySelector("body").removeAttribute("data-admin");
   c.querySelector("#bLogin").removeAttribute("style");
   state.stamp = new Date().toISOString();
-  save();
+  state.belumTerbit = false;
+  save(false);
   const json = JSON.stringify(state).replace(/\$/g, "$$$$").replace(/<\//g, "<\\/");
   let html = "<!DOCTYPE html>\n" + c.outerHTML;
   if(!/^const SEED = .*$/m.test(html)) return toast("Gagal menyusun berkas HTML");
@@ -1220,6 +1253,7 @@ document.getElementById("botCmd").addEventListener("keydown", e => {
 
 /* ---------- mulai ---------- */
 setPen("M");
+tandaTerbit();
 buildFilters();
 let resume = false;
 try{ resume = sessionStorage.getItem(SKEY) === "1"; }catch(e){}

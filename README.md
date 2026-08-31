@@ -21,6 +21,16 @@ Status admin hilang saat tab ditutup.
 Tanda yang tersedia: **Masuk Pagi**, **Piket OD**, **Masuk Siang**, **Cuti/Izin**.
 Klik sel untuk memberi tanda, klik kanan untuk menghapus.
 
+**Umpan balik saat menyunting.** Tiap kali sebuah sel diubah, muncul pemberitahuan
+sekilas di bawah layar yang menyebut petugas, tanggal, dan tanda apa yang berubah —
+misalnya `Herry · 9 September 2026 — Masuk Pagi diganti Piket OD`. Bila perubahan gagal
+disimpan, yang muncul justru peringatan itu, bukan pesan berhasil.
+
+**Penanda belum diterbitkan.** Begitu ada suntingan, penanda oranye **Belum diterbitkan**
+menyala di kop dan bertahan walau halaman dimuat ulang. Penanda ini padam setelah
+**Ekspor → Berkas HTML mandiri**, sebagai pengingat bahwa suntingan baru ada di browser
+Anda dan belum masuk ke berkas yang dilihat tim.
+
 **Yang hanya terlihat oleh admin.** Kolom **Total** (jumlah tugas per petugas) dan baris
 **Jumlah** (jumlah petugas per hari) disembunyikan dalam mode lihat saja, termasuk pada
 hasil ekspor Excel dan CSV. Rekan hanya melihat siapa bertugas kapan, tanpa rekapitulasi.
